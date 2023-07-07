@@ -1,5 +1,6 @@
 package com.asusoftware.userapi.config;
 
+import com.asusoftware.userapi.token.repository.TokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final TokenRepository tokenRepository;
 
     @Override
     protected void doFilterInternal(
@@ -48,8 +50,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             // Get the user details from the database
             final UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            var isTokenValid = tokenRepository.findByToken(jwt)
+                    .map(t -> !t.isExpired() && !t.isRevoked())
+                    .orElse(false);
             // Check if the jwt token is valid
-            if(jwtService.isTokenValid(jwt, userDetails)) {
+            if(jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 // Create an authentication object
                 final UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(

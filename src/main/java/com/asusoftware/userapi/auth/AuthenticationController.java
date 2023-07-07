@@ -1,8 +1,12 @@
 package com.asusoftware.userapi.auth;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -21,7 +25,15 @@ public class AuthenticationController {
       return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
-    @GetMapping("/confirm")
+    @PostMapping("/refresh-token")
+    public void refreshToken(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        authenticationService.refreshToken(request, response);
+    }
+
+ /*   @GetMapping("/confirm")
     public String confirmEmail(@RequestParam("code") String activationCode) {
         // Verificați dacă codul de activare este valid și corect
         if (isValidActivationCode(activationCode)) {
@@ -37,5 +49,5 @@ public class AuthenticationController {
         // Implementați verificarea validității codului de activare
         // Returnați true dacă codul este valid, false în caz contrar
         return true;
-    }
+    } */
 }
