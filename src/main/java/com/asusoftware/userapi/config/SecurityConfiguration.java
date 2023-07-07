@@ -21,17 +21,27 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf()
-                .disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/api/v1/auth/**") //authorize only the /api/v1/auth/** endpoints
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // spring will create a new session for every request
-                .and()
+                .csrf((csrf) -> csrf.disable())
+                //.authorizeHttpRequests()
+                .securityMatcher("/api/**") //Configure HttpSecurity to only be applied to URLs that start with /api/
+                .authorizeHttpRequests((authorizeHttpRequests) ->
+                        authorizeHttpRequests
+                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                .anyRequest()
+                                .permitAll()
+                )
+                //.requestMatchers("/api/v1/auth/**") //authorize only the /api/v1/auth/** endpoints
+                //.permitAll()
+                //.anyRequest()
+               // .authenticated()
+               // .and()
+               // .sessionManagement()
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                //.sessionCreationPolicy(SessionCreationPolicy.STATELESS) // spring will create a new session for every request
+                //.and()
                 .authenticationProvider(authenticationProvider) // represents the authentication provider
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // represents the authentication filter
         return http.build();

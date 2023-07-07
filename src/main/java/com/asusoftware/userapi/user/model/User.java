@@ -41,6 +41,12 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false, length = 20)
     private Role role;
 
+    @Column(name = "activation_code", length = 36)
+    private String activationCode;
+
+    @Column(name = "enabled")
+    private boolean enabled = false;
+
 
     // return a list of roles
     @Override
