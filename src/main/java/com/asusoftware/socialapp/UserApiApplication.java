@@ -1,4 +1,4 @@
-package com.asusoftware.userapi;
+package com.asusoftware.socialapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

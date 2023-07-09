@@ -1,6 +1,6 @@
-package com.asusoftware.userapi.config;
+package com.asusoftware.socialapp.config;
 
-import com.asusoftware.userapi.user.repository.UserRepository;
+import com.asusoftware.socialapp.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

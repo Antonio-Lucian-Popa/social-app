@@ -1,4 +1,4 @@
-package com.asusoftware.userapi.config;
+package com.asusoftware.socialapp.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

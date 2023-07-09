@@ -1,6 +1,6 @@
-package com.asusoftware.userapi.token.model;
+package com.asusoftware.socialapp.token.model;
 
-import com.asusoftware.userapi.user.model.User;
+import com.asusoftware.socialapp.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

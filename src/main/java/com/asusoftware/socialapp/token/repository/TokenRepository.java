@@ -1,6 +1,6 @@
-package com.asusoftware.userapi.token.repository;
+package com.asusoftware.socialapp.token.repository;
 
-import com.asusoftware.userapi.token.model.Token;
+import com.asusoftware.socialapp.token.model.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

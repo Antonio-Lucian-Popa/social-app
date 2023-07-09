@@ -8,6 +8,14 @@
 * Logout mechanism
 * Refresh token
 
+## Done
+* ✅ Jwt Authentication
+* ✅ User can register
+* ✅ User can login
+* ✅ User can logout
+* ✅ User can create a post
+* ✅ User can get all posts
+
 
 ## Technologies
 - Spring Boot

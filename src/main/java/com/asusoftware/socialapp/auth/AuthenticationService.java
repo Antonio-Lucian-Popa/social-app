@@ -1,13 +1,13 @@
-package com.asusoftware.userapi.auth;
+package com.asusoftware.socialapp.auth;
 
-import com.asusoftware.userapi.config.JwtService;
-import com.asusoftware.userapi.email.services.EmailService;
-import com.asusoftware.userapi.token.model.Token;
-import com.asusoftware.userapi.token.model.TokenType;
-import com.asusoftware.userapi.token.repository.TokenRepository;
-import com.asusoftware.userapi.user.model.Role;
-import com.asusoftware.userapi.user.model.User;
-import com.asusoftware.userapi.user.repository.UserRepository;
+import com.asusoftware.socialapp.config.JwtService;
+import com.asusoftware.socialapp.email.services.EmailService;
+import com.asusoftware.socialapp.token.model.Token;
+import com.asusoftware.socialapp.token.model.TokenType;
+import com.asusoftware.socialapp.token.repository.TokenRepository;
+import com.asusoftware.socialapp.user.model.Role;
+import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

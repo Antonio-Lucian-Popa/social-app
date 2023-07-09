@@ -1,6 +1,6 @@
-package com.asusoftware.userapi.config;
+package com.asusoftware.socialapp.config;
 
-import com.asusoftware.userapi.token.repository.TokenRepository;
+import com.asusoftware.socialapp.token.repository.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;

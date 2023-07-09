@@ -1,5 +1,7 @@
-package com.asusoftware.userapi.user.model;
+package com.asusoftware.socialapp.user.model;
 
+import com.asusoftware.socialapp.post.model.Comment;
+import com.asusoftware.socialapp.post.model.Post;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

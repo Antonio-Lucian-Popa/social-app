@@ -1,4 +1,4 @@
-package com.asusoftware.userapi.auth;
+package com.asusoftware.socialapp.auth;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

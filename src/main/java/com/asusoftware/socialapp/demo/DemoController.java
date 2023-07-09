@@ -1,4 +1,4 @@
-package com.asusoftware.userapi.demo;
+package com.asusoftware.socialapp.demo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

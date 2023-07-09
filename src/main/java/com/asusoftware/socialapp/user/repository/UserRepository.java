@@ -1,6 +1,6 @@
-package com.asusoftware.userapi.user.repository;
+package com.asusoftware.socialapp.user.repository;
 
-import com.asusoftware.userapi.user.model.User;
+import com.asusoftware.socialapp.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

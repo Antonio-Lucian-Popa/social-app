@@ -1,4 +1,4 @@
-package com.asusoftware.userapi.config;
+package com.asusoftware.socialapp.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

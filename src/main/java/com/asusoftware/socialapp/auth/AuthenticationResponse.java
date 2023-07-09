@@ -1,4 +1,4 @@
-package com.asusoftware.userapi.auth;
+package com.asusoftware.socialapp.auth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
