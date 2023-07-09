@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -38,5 +40,13 @@ public class Post {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Relationship with post likes
+    @ManyToMany
+    @JoinTable(
+            name = "user_post_likes",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "post_id")
+    )
+    private Set<User> userLikes = new HashSet<>();
 
 }

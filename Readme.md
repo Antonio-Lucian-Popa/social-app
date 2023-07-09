@@ -15,6 +15,8 @@
 * ✅ User can logout
 * ✅ User can create a post
 * ✅ User can get all posts
+* ✅ User can like a post
+* ✅ User can unlike a post
 
 
 ## Technologies

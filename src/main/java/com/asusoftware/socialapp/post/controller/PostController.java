@@ -27,6 +27,16 @@ public class PostController {
         return ResponseEntity.ok(postService.findPostsByUserId(userId));
     }
 
+    @PutMapping(path = "/like/{postId}/{userId}")
+    public void likePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
+        postService.likePost(postId, userId);
+    }
+
+    @PutMapping(path = "/unlike/{postId}/{userId}")
+    public void unlikePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
+        postService.unlikePost(postId, userId);
+    }
+
     @DeleteMapping(path = "/delete/{id}/{userId}")
     public void deletePostById(@PathVariable("id") UUID id, @PathVariable("userId") UUID userId) {
         postService.deletePostById(id, userId);
