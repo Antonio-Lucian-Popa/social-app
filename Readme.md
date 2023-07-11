@@ -19,6 +19,10 @@
 * ✅ User can unlike a post
 * ✅ User can follow another user
 * ✅ User can unfollow another user
+* ✅ User can comment on a post
+* ✅ User can get all comments on a post
+* ✅ User can edit a comment on a post
+* ✅ User can delete a comment on a post
 
 
 ## Technologies
