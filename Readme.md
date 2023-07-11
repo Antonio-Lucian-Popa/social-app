@@ -1,4 +1,4 @@
-# User Api with Jwt Token
+# Social App that uses user api with Jwt Token
 
 ## Features
 * User registration and login with JWT authentication
