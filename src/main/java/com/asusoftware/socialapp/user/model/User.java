@@ -47,6 +47,25 @@ public class User implements UserDetails {
     @Column(name = "enabled")
     private boolean enabled = false;
 
+    // Relationship with follower users
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_followers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "follower_id")
+    )
+    private Set<User> followers = new HashSet<>();
+
+    // Relationship with following users
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
+    private Set<User> following = new HashSet<>();
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, email, password, role, activationCode, enabled);
+    }
+
 
     // return a list of roles
     @Override
