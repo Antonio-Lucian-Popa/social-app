@@ -38,6 +38,11 @@ public class PostService {
         return posts.stream().map(PostDto::fromEntityList).collect(Collectors.toList());
     }
 
+    public Post findById(UUID id) {
+        return postRepository.findById(id).orElseThrow(() ->
+                new PostNotFoundException("Post not found with id: " + id));
+    }
+
     public void deletePostById(UUID id, UUID userId) {
         Post post = postRepository.findByIdAndUserId(id, userId);
         postRepository.delete(post);
