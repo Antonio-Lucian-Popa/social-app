@@ -17,6 +17,8 @@
 * ✅ User can get all posts
 * ✅ User can like a post
 * ✅ User can unlike a post
+* ✅ User can follow another user
+* ✅ User can unfollow another user
 
 
 ## Technologies
