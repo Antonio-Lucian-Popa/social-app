@@ -10,10 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -49,9 +46,10 @@ public class JwtService {
     }
 
     public String generateRefreshToken(
-            UserDetails userDetails
+            UserDetails userDetails,
+            UUID userId
     ) {
-        return generateToken(new HashMap<>(), userDetails, refreshExpiration);
+        return generateToken(userId, new HashMap<>(), userDetails, refreshExpiration);
     }
 
     /**
@@ -59,8 +57,8 @@ public class JwtService {
      * @param userDetails user details
      * @return jwt token
      */
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, jwtExpiration);
+    public String generateToken(UserDetails userDetails, UUID userId) {
+        return generateToken(userId, new HashMap<>(), userDetails, jwtExpiration);
     }
 
     /**
@@ -69,7 +67,9 @@ public class JwtService {
      * @param userDetails user details
      * @return jwt token
      */
-    public String generateToken(Map<String, Objects> extraClaims, UserDetails userDetails, long expiration) {
+    public String generateToken(UUID userId, Map<String, Object> extraClaims, UserDetails userDetails, long expiration) {
+        extraClaims.put("userId", userId);
+        //extraClaims.put("userRoles", userDetails.getAuthorities());
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

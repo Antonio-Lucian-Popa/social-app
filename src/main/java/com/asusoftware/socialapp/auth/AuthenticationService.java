@@ -1,7 +1,7 @@
 package com.asusoftware.socialapp.auth;
 
 import com.asusoftware.socialapp.config.JwtService;
-import com.asusoftware.socialapp.email.services.EmailService;
+//import com.asusoftware.socialapp.email.services.EmailService;
 import com.asusoftware.socialapp.token.model.Token;
 import com.asusoftware.socialapp.token.model.TokenType;
 import com.asusoftware.socialapp.token.repository.TokenRepository;
@@ -30,7 +30,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
-    private final EmailService emailService;
+    //private final EmailService emailService;
 
 
     /**
@@ -43,6 +43,8 @@ public class AuthenticationService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
+                .birthday(request.getBirthday())
+                .gender(request.getGender())
                 .role(Role.USER)
                 .build();
         var savedUser= userRepository.save(user);
@@ -55,8 +57,8 @@ public class AuthenticationService {
         // Trimiteți e-mailul de confirmare
 //        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink);
 
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(savedUser, savedUser.getId());
+        var refreshToken = jwtService.generateRefreshToken(savedUser, savedUser.getId());
         saveUserToken(savedUser, jwtToken);
         return AuthenticationResponse.builder()
                 .accessToken(jwtToken)
@@ -70,8 +72,8 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        var refreshToken = jwtService.generateRefreshToken(user);
+        var jwtToken = jwtService.generateToken(user, user.getId());
+        var refreshToken = jwtService.generateRefreshToken(user, user.getId());
         revokeAllUserTokens(user);
         saveUserToken(user, jwtToken);
         return AuthenticationResponse.builder()
@@ -118,7 +120,7 @@ public class AuthenticationService {
             var user = this.userRepository.findByEmail(userEmail)
                     .orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
-                var accessToken = jwtService.generateToken(user);
+                var accessToken = jwtService.generateToken(user, user.getId());
                 revokeAllUserTokens(user);
                 saveUserToken(user, accessToken);
                 var authResponse = AuthenticationResponse.builder()

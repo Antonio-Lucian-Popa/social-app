@@ -1,8 +1,11 @@
 package com.asusoftware.socialapp.auth;
+import com.asusoftware.socialapp.user.model.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 @Data
 @Builder
@@ -14,4 +17,6 @@ public class RegisterRequest {
     private String lastName;
     private String email;
     private String password;
+    private Date birthday;
+    private Gender gender;
 }

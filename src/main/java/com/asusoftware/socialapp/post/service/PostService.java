@@ -35,7 +35,11 @@ public class PostService {
 
    public List<PostDto> findPostsByUserId(UUID userId) {
         List<Post> posts = postRepository.findByUserId(userId);
-        return posts.stream().map(PostDto::fromEntityList).collect(Collectors.toList());
+        return posts.stream().map( post -> {
+          PostDto postDto = PostDto.fromEntityList(post);
+          postDto.setNumberOfComments(post.getComments().size());
+          return postDto;
+        }).collect(Collectors.toList());
     }
 
     public Post findById(UUID id) {

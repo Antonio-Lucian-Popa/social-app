@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Builder
@@ -20,6 +21,7 @@ public class PostDto {
     private LocalDateTime createdAt;
     private UserPostDto user;
     private List<UserPostDto> userLikes;
+    private int numberOfComments;
 
     public static PostDto fromEntityList(Post post) {
         return PostDto.builder()
@@ -28,7 +30,7 @@ public class PostDto {
                 //.imageUrl(post.getImageUrl())
                 .createdAt(post.getCreatedAt())
                 .user(UserPostDto.fromEntity(post.getUser()))
-                .userLikes(post.getUserLikes().stream().map(UserPostDto::fromEntityList).toList())
+                .userLikes(post.getUserLikes().stream().map(UserPostDto::fromEntityList).collect(Collectors.toList()))
                 .build();
     }
 }
