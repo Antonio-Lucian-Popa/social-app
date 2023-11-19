@@ -25,18 +25,44 @@ public class CommentService {
     private final PostService postService;
     private final UserService userService;
 
+    /*
     /**
      * Create a comment
      * @param postId
      * @param commentDto
      * @return CommentDto
-     */
+     */ /*
     public CommentDto createComment(UUID postId,UUID userId, CreateCommentDto commentDto) {
         Post post = postService.findById(postId);
         User user = userService.findById(userId);
         Comment comment = commentDto.toEntity(commentDto);
         comment.setUser(user);
         comment.setPost(post);
+        return CommentDto.fromEntity(commentRepository.save(comment));
+    } */
+
+    @Transactional
+    public CommentDto createComment(CreateCommentDto commentDTO) {
+        Comment comment = new Comment();
+        comment.setValue(commentDTO.getValue());
+
+        // Set the parent comment for subComments, if applicable
+        if (commentDTO.getParentId() != null) {
+            Comment parentComment = commentRepository.findById(commentDTO.getParentId())
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+            comment.setParentComment(parentComment);
+        }
+
+        // Set the post and user - assuming you have methods to fetch them
+        // For example, using a PostService and UserService
+        Post post = postService.findById(commentDTO.getPostId());
+        User user = userService.findById(commentDTO.getUserId());
+        comment.setPost(post);
+        comment.setUser(user);
+
+        // Setting the creation time
+        comment.setCreatedAt(LocalDateTime.now());
+
         return CommentDto.fromEntity(commentRepository.save(comment));
     }
 
@@ -96,47 +122,36 @@ public class CommentService {
 
     // Other methods
 
-    /*
+    // Add a subcomment to a comment
     @Transactional
-    public SubcommentDTO createSubcomment(String value, UUID parentCommentId, User user) {
-        Comment parentComment = commentRepository.findById(parentCommentId).orElse(null);
-        if (parentComment == null) {
-            // Handle the case where the parent comment does not exist
-            return null;
-        }
+    public CommentDto addSubComment(UUID parentId, CreateCommentDto subComment) {
 
-        Comment subcomment = new Comment();
-        subcomment.setValue(value);
-        subcomment.setPost(parentComment.getPost());
-        subcomment.setUser(user);
-        subcomment.setParentCommentId(parentCommentId);
-        subcomment.setCreatedAt(LocalDateTime.now());
-        commentRepository.save(subcomment);
+        // Find the parent comment for subComment
+        Comment parentComment = commentRepository.findById(parentId)
+                .orElseThrow(() -> new RuntimeException("Parent comment not found with id " + parentId));
 
-        return convertToSubcommentDTO(subcomment);
+        // set the parent comment for this subComment
+        subComment.setParentId(parentComment.getId());
+
+        // find the user that commented this subComment
+        User userComment = userService.findById(subComment.getUserId());
+
+        // find the post entity where the subComment is placed
+        Post post = postService.findById(subComment.getPostId());
+
+        // convert subComment in entity to save
+        Comment subCommentEntity = subComment.toEntity(subComment);
+
+        // set the user that comments
+        subCommentEntity.setUser(userComment);
+
+        subCommentEntity.setPost(post);
+        return CommentDto.fromEntity(commentRepository.save(subCommentEntity));
     }
 
-
-    @Transactional(readOnly = true)
-    public List<CommentDTO> getTopLevelComments() {
-        List<Comment> topLevelComments = commentRepository.findByParentCommentIdIsNull();
-        return topLevelComments.stream().map(this::convertToCommentDTO).collect(Collectors.toList());
+    // Get all subcomments of a comment
+    public List<Comment> getSubComments(UUID parentId) {
+        return commentRepository.findAllByParentCommentId(parentId);
     }
-
-    @Transactional(readOnly = true)
-    public List<SubcommentDTO> getSubcommentsByParentCommentId(UUID parentCommentId) {
-        List<Comment> subcomments = commentRepository.findByParentCommentId(parentCommentId);
-        return subcomments.stream().map(this::convertToSubcommentDTO).collect(Collectors.toList());
-    }
-
-    // Add more methods as needed, such as updating or deleting comments
-
-    private CommentDTO convertToCommentDTO(Comment comment) {
-        // Implement the conversion logic from Comment entity to CommentDTO here
-    }
-
-    private SubcommentDTO convertToSubcommentDTO(Comment comment) {
-        // Implement the conversion logic from Comment entity to SubcommentDTO here
-    } */
 }
 

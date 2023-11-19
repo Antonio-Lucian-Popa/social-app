@@ -15,4 +15,6 @@ public interface CommentRepository extends JpaRepository<Comment, UUID> {
     List<Comment> findByParentCommentIdIsNull(); // Find top-level comments
 
     List<Comment> findByParentCommentId(UUID parentCommentId); // Find subcomments by parentCommentId
+
+    List<Comment> findAllByParentCommentId(UUID parentId); // Find all subcomments by parentCommentId
 }

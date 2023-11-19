@@ -14,17 +14,23 @@ public class CommentDto {
     private String value;
     private LocalDateTime createdAt;
     private UUID postId;
-    private UserDto user;
-    private UUID parentCommentId;
+    private UUID userId;
+    private UUID parentId;
 
     public static CommentDto fromEntity(Comment comment) {
         CommentDto commentDto = new CommentDto();
         commentDto.setId(comment.getId());
         commentDto.setValue(comment.getValue());
         commentDto.setCreatedAt(comment.getCreatedAt());
-      //  commentDto.setSubcomments(fromEntityList(comment.getSubcomments()));
+        commentDto.setPostId(comment.getPost().getId());
+        commentDto.setUserId(comment.getUser().getId());
+
+        if (comment.getParentComment() != null) {
+            commentDto.setParentId(comment.getParentComment().getId());
+        }
         return commentDto;
     }
+
 
     public static List<CommentDto> fromEntityList(List<Comment> comments) {
         return comments.stream().map(CommentDto::fromEntity).toList();

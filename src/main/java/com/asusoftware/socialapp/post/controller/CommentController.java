@@ -25,8 +25,8 @@ public class CommentController {
      * @return comment
      */
     @PostMapping("/{postId}/{userId}")
-    public ResponseEntity<CommentDto> createComment(@PathVariable UUID postId, @PathVariable(name = "userId") UUID userId, @RequestBody CreateCommentDto commentDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(postId, userId, commentDto));
+    public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentDto commentDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(commentDto));
     }
 
     /**
