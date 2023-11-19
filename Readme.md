@@ -23,6 +23,9 @@
 * ✅ User can get all comments on a post
 * ✅ User can edit a comment on a post
 * ✅ User can delete a comment on a post
+* ✅ User can add profile image
+* ✅ User can update a profile image
+* ✅ User can delete a profile image
 
 
 ## Technologies
