@@ -1,5 +1,6 @@
 package com.asusoftware.socialapp.post.controller;
 
+import com.asusoftware.socialapp.post.model.Comment;
 import com.asusoftware.socialapp.post.model.dto.CommentDto;
 import com.asusoftware.socialapp.post.model.dto.CreateCommentDto;
 import com.asusoftware.socialapp.post.service.CommentService;
@@ -73,5 +74,18 @@ public class CommentController {
 
     // Other endpoints and methods
 
+    /*
+    @PostMapping("/create-subcomment/{parentCommentId}")
+    public ResponseEntity<Comment> createSubcomment(
+            @PathVariable UUID parentCommentId,
+            @RequestBody CreateSubcommentRequest request
+    ) {
+        Comment subcomment = commentService.createSubcomment(request.getValue(), parentCommentId, request.getUser());
+        if (subcomment != null) {
+            return new ResponseEntity<>(subcomment, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    } */
 }
 

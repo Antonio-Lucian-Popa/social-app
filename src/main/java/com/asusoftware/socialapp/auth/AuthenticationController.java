@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -15,9 +16,12 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request) throws Exception {
-      return ResponseEntity.ok(authenticationService.register(request));
+    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    public ResponseEntity<AuthenticationResponse> register(
+            @RequestPart("request") RegisterRequest request,
+            @RequestPart(value = "file", required = false) MultipartFile file
+    ) throws Exception {
+      return ResponseEntity.ok(authenticationService.register(request, file));
     }
 
     @PostMapping("/authenticate")

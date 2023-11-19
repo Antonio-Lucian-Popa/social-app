@@ -8,6 +8,7 @@ import com.asusoftware.socialapp.token.repository.TokenRepository;
 import com.asusoftware.socialapp.user.model.Role;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.repository.UserRepository;
+import com.asusoftware.socialapp.user.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -32,12 +34,14 @@ public class AuthenticationService {
     private final TokenRepository tokenRepository;
     //private final EmailService emailService;
 
+    private final UserService userService;
+
 
     /**
      * @param request
      * @return
      */
-    public AuthenticationResponse register(RegisterRequest request) throws Exception {
+    public AuthenticationResponse register(RegisterRequest request, MultipartFile file) throws Exception {
         var user = User.builder()
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -48,6 +52,14 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         var savedUser= userRepository.save(user);
+        System.out.println("A intrat:" + file);
+
+        if (file != null && !file.isEmpty()) {
+            userService.uploadProfileImage(
+                    file,
+                    savedUser.getId()
+            );
+        }
 
         // Generați un cod de activare unic și construiți URL-ul de confirmare
 //        String activationCode = generateActivationCode();

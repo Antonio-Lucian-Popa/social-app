@@ -44,6 +44,9 @@ public class User implements UserDetails {
     @Column(name = "gender")
     private Gender gender;
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
     private Role role;

@@ -9,9 +9,11 @@ import com.asusoftware.socialapp.post.model.dto.CreateCommentDto;
 import com.asusoftware.socialapp.post.repository.CommentRepository;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,5 +95,48 @@ public class CommentService {
     }
 
     // Other methods
+
+    /*
+    @Transactional
+    public SubcommentDTO createSubcomment(String value, UUID parentCommentId, User user) {
+        Comment parentComment = commentRepository.findById(parentCommentId).orElse(null);
+        if (parentComment == null) {
+            // Handle the case where the parent comment does not exist
+            return null;
+        }
+
+        Comment subcomment = new Comment();
+        subcomment.setValue(value);
+        subcomment.setPost(parentComment.getPost());
+        subcomment.setUser(user);
+        subcomment.setParentCommentId(parentCommentId);
+        subcomment.setCreatedAt(LocalDateTime.now());
+        commentRepository.save(subcomment);
+
+        return convertToSubcommentDTO(subcomment);
+    }
+
+
+    @Transactional(readOnly = true)
+    public List<CommentDTO> getTopLevelComments() {
+        List<Comment> topLevelComments = commentRepository.findByParentCommentIdIsNull();
+        return topLevelComments.stream().map(this::convertToCommentDTO).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<SubcommentDTO> getSubcommentsByParentCommentId(UUID parentCommentId) {
+        List<Comment> subcomments = commentRepository.findByParentCommentId(parentCommentId);
+        return subcomments.stream().map(this::convertToSubcommentDTO).collect(Collectors.toList());
+    }
+
+    // Add more methods as needed, such as updating or deleting comments
+
+    private CommentDTO convertToCommentDTO(Comment comment) {
+        // Implement the conversion logic from Comment entity to CommentDTO here
+    }
+
+    private SubcommentDTO convertToSubcommentDTO(Comment comment) {
+        // Implement the conversion logic from Comment entity to SubcommentDTO here
+    } */
 }
 

@@ -11,4 +11,8 @@ import java.util.UUID;
 public interface CommentRepository extends JpaRepository<Comment, UUID> {
     List<Comment> findByPostId(UUID postId);
     // Alte metode specifice comentariului
+
+    List<Comment> findByParentCommentIdIsNull(); // Find top-level comments
+
+    List<Comment> findByParentCommentId(UUID parentCommentId); // Find subcomments by parentCommentId
 }
