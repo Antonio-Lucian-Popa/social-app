@@ -20,11 +20,10 @@ public class CommentController {
 
     /**
      * Create comment
-     * @param postId post id
      * @param commentDto comment dto
      * @return comment
      */
-    @PostMapping("/{postId}/{userId}")
+    @PostMapping
     public ResponseEntity<CommentDto> createComment(@RequestBody CreateCommentDto commentDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(commentService.createComment(commentDto));
     }
