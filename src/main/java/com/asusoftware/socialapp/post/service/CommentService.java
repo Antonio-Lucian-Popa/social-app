@@ -87,12 +87,38 @@ public class CommentService {
     public void deleteComment(UUID commentId, UUID userId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new CommentNotFoundException("Comment not found with id: " + commentId));
+
+        // Check if the user is authorized to delete the comment
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new UnauthorizedUserException("User not authorized to delete this comment");
+        }
+
+        // Recursive delete method to handle subcomments
+        deleteCommentAndSubcomments(comment);
+    }
+
+    private void deleteCommentAndSubcomments(Comment comment) {
+        // If comment has subcomments, delete them first
+        if (comment.getSubComments() != null) {
+            for (Comment subComment : comment.getSubComments()) {
+                deleteCommentAndSubcomments(subComment);
+            }
+        }
+
+        // Delete the comment itself
+        commentRepository.delete(comment);
+    }
+
+    /*
+    public void deleteComment(UUID commentId, UUID userId) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new CommentNotFoundException("Comment not found with id: " + commentId));
         if(!comment.getUser().getId().equals(userId)) {
             throw new CommentNotFoundException("Comment not found with id: " + commentId);
         } else {
             commentRepository.delete(comment);
         }
-    }
+    } */
 
     /**
      * Update a comment by id
