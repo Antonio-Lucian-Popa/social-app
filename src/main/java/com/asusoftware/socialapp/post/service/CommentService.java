@@ -1,5 +1,6 @@
 package com.asusoftware.socialapp.post.service;
 
+import com.asusoftware.socialapp.exceptions.UnauthorizedUserException;
 import com.asusoftware.socialapp.post.exception.CommentNotFoundException;
 import com.asusoftware.socialapp.post.model.Comment;
 import com.asusoftware.socialapp.post.model.Post;
@@ -102,6 +103,25 @@ public class CommentService {
     public CommentDto updateComment(UUID commentId, UUID userId, CreateCommentDto updatedComment) {
         Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
                 new CommentNotFoundException("Comment not found with id: " + commentId));
+
+        // Check if the user updating the comment is the owner of the comment
+        if (!comment.getUser().getId().equals(userId)) {
+            throw new UnauthorizedUserException("User not authorized to update this comment");
+        }
+
+        // Update the comment's value
+        comment.setValue(updatedComment.getValue());
+
+        // Save the updated comment
+        Comment updated = commentRepository.save(comment);
+
+        // Convert the updated comment entity to DTO
+        return CommentDto.fromEntity(updated);
+    }
+
+   /* public CommentDto updateComment(UUID commentId, UUID userId, CreateCommentDto updatedComment) {
+        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
+                new CommentNotFoundException("Comment not found with id: " + commentId));
         if(!comment.getUser().getId().equals(userId)) {
             throw new CommentNotFoundException("Comment not found with id: " + commentId);
         } else {
@@ -110,7 +130,7 @@ public class CommentService {
 
         comment.setValue(updatedComment.getValue());
         return CommentDto.fromEntity(commentRepository.save(comment));
-    }
+    } */
 
     /**
      * Get all comments by post id
@@ -132,37 +152,5 @@ public class CommentService {
     }
 
     // Other methods
-
-    // Add a subcomment to a comment
-    @Transactional
-    public CommentDto addSubComment(UUID parentId, CreateCommentDto subComment) {
-
-        // Find the parent comment for subComment
-        Comment parentComment = commentRepository.findById(parentId)
-                .orElseThrow(() -> new RuntimeException("Parent comment not found with id " + parentId));
-
-        // set the parent comment for this subComment
-        subComment.setParentId(parentComment.getId());
-
-        // find the user that commented this subComment
-        User userComment = userService.findById(subComment.getUserId());
-
-        // find the post entity where the subComment is placed
-        Post post = postService.findById(subComment.getPostId());
-
-        // convert subComment in entity to save
-        Comment subCommentEntity = subComment.toEntity(subComment);
-
-        // set the user that comments
-        subCommentEntity.setUser(userComment);
-
-        subCommentEntity.setPost(post);
-        return CommentDto.fromEntity(commentRepository.save(subCommentEntity));
-    }
-
-    // Get all subcomments of a comment
-    public List<Comment> getSubComments(UUID parentId) {
-        return commentRepository.findAllByParentCommentId(parentId);
-    }
 }
 
