@@ -28,6 +28,8 @@
 * ✅ User can delete a profile image
 * ✅ User can add a sub comment on a comment
 * ✅ User can edit a sub comment on a comment
+* ✅ User can delete a comment and all subComments on a comment
+* ✅ User can delete a sub comment on a comment
 
 
 ## Technologies
