@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 public class CommentDto {
@@ -14,8 +15,9 @@ public class CommentDto {
     private String value;
     private LocalDateTime createdAt;
     private UUID postId;
-    private UUID userId;
+    private UserDto userDto;
     private UUID parentId;
+    private List<CommentDto> subComments;
 
     public static CommentDto fromEntity(Comment comment) {
         CommentDto commentDto = new CommentDto();
@@ -23,16 +25,19 @@ public class CommentDto {
         commentDto.setValue(comment.getValue());
         commentDto.setCreatedAt(comment.getCreatedAt());
         commentDto.setPostId(comment.getPost().getId());
-        commentDto.setUserId(comment.getUser().getId());
+        commentDto.setUserDto(UserDto.toDto(comment.getUser()));
 
         if (comment.getParentComment() != null) {
             commentDto.setParentId(comment.getParentComment().getId());
         }
+
+        commentDto.setSubComments(fromEntityList(comment.getSubComments()));
         return commentDto;
     }
 
 
     public static List<CommentDto> fromEntityList(List<Comment> comments) {
-        return comments.stream().map(CommentDto::fromEntity).toList();
+        if(comments == null) return null; // (1)
+        return comments.stream().map(CommentDto::fromEntity).collect(Collectors.toList());
     }
 }

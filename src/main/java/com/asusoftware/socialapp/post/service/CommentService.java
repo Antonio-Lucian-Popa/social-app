@@ -1,7 +1,6 @@
 package com.asusoftware.socialapp.post.service;
 
 import com.asusoftware.socialapp.post.exception.CommentNotFoundException;
-import com.asusoftware.socialapp.post.exception.PostNotFoundException;
 import com.asusoftware.socialapp.post.model.Comment;
 import com.asusoftware.socialapp.post.model.Post;
 import com.asusoftware.socialapp.post.model.dto.CommentDto;
@@ -9,13 +8,14 @@ import com.asusoftware.socialapp.post.model.dto.CreateCommentDto;
 import com.asusoftware.socialapp.post.repository.CommentRepository;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.service.UserService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -45,13 +45,8 @@ public class CommentService {
     public CommentDto createComment(CreateCommentDto commentDTO) {
         Comment comment = new Comment();
         comment.setValue(commentDTO.getValue());
-
-        // Set the parent comment for subComments, if applicable
-        if (commentDTO.getParentId() != null) {
-            Comment parentComment = commentRepository.findById(commentDTO.getParentId())
-                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
-            comment.setParentComment(parentComment);
-        }
+        // Setting the creation time
+        comment.setCreatedAt(LocalDateTime.now());
 
         // Set the post and user - assuming you have methods to fetch them
         // For example, using a PostService and UserService
@@ -60,8 +55,15 @@ public class CommentService {
         comment.setPost(post);
         comment.setUser(user);
 
-        // Setting the creation time
-        comment.setCreatedAt(LocalDateTime.now());
+        // Set the parent comment for subComments, if applicable
+        if (commentDTO.getParentId() != null) {
+            Comment parentComment = commentRepository.findById(commentDTO.getParentId())
+                    .orElseThrow(() -> new RuntimeException("Parent comment not found"));
+            comment.setParentComment(parentComment);
+            // TODO: remember to do the delete on the delete req of subcomment
+           // parentComment.getSubComments().add(comment);
+           // commentRepository.save(parentComment);
+        }
 
         return CommentDto.fromEntity(commentRepository.save(comment));
     }
@@ -115,9 +117,18 @@ public class CommentService {
      * @param postId
      * @return List<CommentDto>
      */
-    public List<CommentDto> getCommentsByPostId(UUID postId) {
-        List<Comment> comments = commentRepository.findByPostId(postId);
+   /* public List<CommentDto> getCommentsByPostId(UUID postId) {
+        List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
+        System.out.println(comments);
         return CommentDto.fromEntityList(comments);
+    } */
+
+    @Transactional(readOnly = true)
+    public List<CommentDto> getCommentsByPostId(UUID postId) {
+        List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
+        return comments.stream()
+                .map(CommentDto::fromEntity)
+                .collect(Collectors.toList());
     }
 
     // Other methods
