@@ -26,6 +26,8 @@
 * ✅ User can add profile image
 * ✅ User can update a profile image
 * ✅ User can delete a profile image
+* ✅ User can add a sub comment on a comment
+* ✅ User can edit a sub comment on a comment
 
 
 ## Technologies
