@@ -42,3 +42,7 @@
 - Maven
 
 ![alt text](./schema.png)
+
+## Endpoints
+### User Api
+#### Registration: 

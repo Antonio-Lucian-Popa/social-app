@@ -1,18 +1,25 @@
+server:
+  port : 8081
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/userapi
+    url: jdbc:postgresql://localhost:5432/socialize
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         format_sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    enabled: true
+    drop-first: true # Drops and creates scheme from scratch on every start
+    change-log: classpath:db/changelog/db.changelog-master.yaml
 
 upload:
   dir: uploads/

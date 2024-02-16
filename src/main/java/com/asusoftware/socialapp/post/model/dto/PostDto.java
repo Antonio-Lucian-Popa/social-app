@@ -22,6 +22,7 @@ public class PostDto {
     private UserPostDto user;
     private List<UserPostDto> userLikes;
     private int numberOfComments;
+    private List<String> imageFilenames;
 
     public static PostDto fromEntityList(Post post) {
         return PostDto.builder()
@@ -31,6 +32,17 @@ public class PostDto {
                 .createdAt(post.getCreatedAt())
                 .user(UserPostDto.fromEntity(post.getUser()))
                 .userLikes(post.getUserLikes().stream().map(UserPostDto::fromEntityList).collect(Collectors.toList()))
+                .build();
+    }
+
+    public static PostDto fromEntity(Post post) {
+        return PostDto.builder()
+                .id(post.getId())
+                .description(post.getDescription())
+                .createdAt(post.getCreatedAt())
+                .user(UserPostDto.fromEntity(post.getUser()))
+                .userLikes(post.getUserLikes().stream().map(UserPostDto::fromEntity).collect(Collectors.toList()))
+                .imageFilenames(post.getImageFilenames()) // Add this line
                 .build();
     }
 }
