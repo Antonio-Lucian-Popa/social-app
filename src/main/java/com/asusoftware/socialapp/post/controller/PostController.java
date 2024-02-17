@@ -6,6 +6,9 @@ import com.asusoftware.socialapp.post.service.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +39,24 @@ public class PostController {
             @RequestPart("files") List<MultipartFile> files
     ) {
         return ResponseEntity.ok(postService.createPostWithImages(userId, createPostDto, files));
+    }
+
+    /**
+     * Find posts based on my user id, to retreive post from my friends
+     * @param userId your user id
+     * @param page
+     * @param size
+     * @return a list of posts based on page size
+     */
+    @GetMapping(path = "/findAllPosts/{userId}")
+    public ResponseEntity<Page<PostDto>> findPostsByUserId(
+            @PathVariable("userId") UUID userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostDto> postDtos = postService.findAllFollowingUsersPosts(userId, pageable);
+        return ResponseEntity.ok(postDtos);
     }
 
     @GetMapping(path = "/{userId}")

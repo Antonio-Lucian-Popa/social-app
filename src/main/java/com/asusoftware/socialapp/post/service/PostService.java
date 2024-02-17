@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -89,7 +91,18 @@ public class PostService {
         }
     }
 
-   public List<PostDto> findPostsByUserId(UUID userId) {
+
+    public Page<PostDto> findAllFollowingUsersPosts(UUID userId, Pageable pageable) {
+        Page<Post> postPage = postRepository.findFollowingUsersPosts(userId, pageable);
+        return postPage.map(post -> {
+            PostDto postDto = PostDto.fromEntityList(post);
+            postDto.setNumberOfComments(post.getComments().size());
+            return postDto;
+        });
+    }
+
+
+    public List<PostDto> findPostsByUserId(UUID userId) {
         List<Post> posts = postRepository.findByUserId(userId);
         return posts.stream().map( post -> {
           PostDto postDto = PostDto.fromEntityList(post);

@@ -27,8 +27,8 @@ VALUES
 -- changeset yourname:insert-post-images
 INSERT INTO post_images (post_id, image_filename)
 VALUES
-  ('c0c2c1d4-1f2b-11ed-861d-0242ac120002', 'mountains.jpg'),
-  ('d0d2d1d4-1f2b-11ed-861d-0242ac120002', 'beach_sunset.jpg');
+  ('c0c2c1d4-1f2b-11ed-861d-0242ac120002', 'https://images.unsplash.com/photo-1707343844152-6d33a0bb32c3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'),
+  ('d0d2d1d4-1f2b-11ed-861d-0242ac120002', 'https://images.unsplash.com/photo-1682687982423-295485af248a?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
 
 -- changeset yourname:insert-user-post-likes
 INSERT INTO user_post_likes (user_id, post_id)
