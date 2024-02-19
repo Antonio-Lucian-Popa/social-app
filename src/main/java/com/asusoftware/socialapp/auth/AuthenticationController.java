@@ -16,7 +16,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    @PostMapping(value = "/register", consumes = {"multipart/form-data"})
+    @PostMapping(value = "/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestPart("request") RegisterRequest request,
             @RequestPart(value = "file", required = false) MultipartFile file
