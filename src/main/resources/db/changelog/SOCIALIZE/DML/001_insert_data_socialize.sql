@@ -9,8 +9,8 @@ VALUES
 -- changeset yourname:insert-tokens
 INSERT INTO token (id, token, token_type, revoked, expired, user_id)
 VALUES
-  (1, 'token1', 'BEARER', FALSE, FALSE, 'a0a2a1d4-1f2b-11ed-861d-0242ac120002'),
-  (2, 'token2', 'BEARER', FALSE, FALSE, 'b1b2b1d4-1f2b-11ed-861d-0242ac120002');
+  (uuid_generate_v4(), 'token1', 'BEARER', FALSE, FALSE, 'a0a2a1d4-1f2b-11ed-861d-0242ac120002'),
+  (uuid_generate_v4(), 'token2', 'BEARER', FALSE, FALSE, 'b1b2b1d4-1f2b-11ed-861d-0242ac120002');
 
 -- changeset yourname:insert-posts
 INSERT INTO posts (id, description, created_at, user_id)

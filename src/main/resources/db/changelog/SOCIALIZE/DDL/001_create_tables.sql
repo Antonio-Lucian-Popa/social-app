@@ -17,7 +17,7 @@ CREATE TABLE users (
 
 -- changeset yourname:create-token-table
 CREATE TABLE token (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY,
     token VARCHAR(255) UNIQUE NOT NULL,
     token_type VARCHAR(255) NOT NULL,
     revoked BOOLEAN NOT NULL,
