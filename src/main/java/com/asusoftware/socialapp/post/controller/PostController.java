@@ -49,7 +49,7 @@ public class PostController {
      * @return a list of posts based on page size
      */
     @GetMapping(path = "/findAllPosts/{userId}")
-    public ResponseEntity<Page<PostDto>> findPostsByUserId(
+    public ResponseEntity<Page<PostDto>> findFollowingPostsByUserId(
             @PathVariable("userId") UUID userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size) {
@@ -60,9 +60,16 @@ public class PostController {
     }
 
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<List<PostDto>> findPostsByUserId(@PathVariable("userId") UUID userId) {
-        return ResponseEntity.ok(postService.findPostsByUserId(userId));
+    public ResponseEntity<Page<PostDto>> findPostsByUserId(
+            @PathVariable("userId") UUID userId,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PostDto> postDtos = postService.findPostsByUserId(userId, pageable);
+        return ResponseEntity.ok(postDtos);
     }
+
 
     @PutMapping(path = "/like/{postId}/{userId}")
     public void likePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {

@@ -109,9 +109,10 @@ public class JwtService {
                 .parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token) // Changed from parseClaimsJwt to parseClaimsJws
                 .getBody();
     }
+
 
     /**
      * Get the sign in key

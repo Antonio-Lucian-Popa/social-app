@@ -102,14 +102,16 @@ public class PostService {
     }
 
 
-    public List<PostDto> findPostsByUserId(UUID userId) {
-        List<Post> posts = postRepository.findByUserId(userId);
-        return posts.stream().map( post -> {
-          PostDto postDto = PostDto.fromEntityList(post);
-          postDto.setNumberOfComments(post.getComments().size());
-          return postDto;
-        }).collect(Collectors.toList());
+    public Page<PostDto> findPostsByUserId(UUID userId, Pageable pageable) {
+        Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+
+        return postPage.map(post -> {
+            PostDto postDto = PostDto.fromEntity(post);
+            postDto.setNumberOfComments(post.getComments().size());
+            return postDto;
+        });
     }
+
 
     public Post findById(UUID id) {
         return postRepository.findById(id).orElseThrow(() ->

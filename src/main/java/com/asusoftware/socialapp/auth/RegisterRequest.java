@@ -20,5 +20,5 @@ public class RegisterRequest {
     private String password;
     private Date birthday;
     private Gender gender;
-    private MultipartFile profileImage;
+  //  private MultipartFile profileImage;
 }

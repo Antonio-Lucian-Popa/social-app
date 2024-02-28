@@ -52,7 +52,6 @@ public class AuthenticationService {
                 .role(Role.USER)
                 .build();
         var savedUser= userRepository.save(user);
-        System.out.println("A intrat:" + file);
 
         if (file != null && !file.isEmpty()) {
             userService.uploadProfileImage(
@@ -68,6 +67,7 @@ public class AuthenticationService {
 
         // Trimiteți e-mailul de confirmare
 //        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink);
+
 
         var jwtToken = jwtService.generateToken(savedUser, savedUser.getId());
         var refreshToken = jwtService.generateRefreshToken(savedUser, savedUser.getId());
