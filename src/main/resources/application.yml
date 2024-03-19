@@ -1,6 +1,10 @@
 server:
   port : 8081
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
   datasource:
     url: jdbc:postgresql://localhost:5432/socialize
     username: postgres
@@ -18,7 +22,7 @@ spring:
 
   liquibase:
     enabled: true
-    drop-first: true # Drops and creates scheme from scratch on every start
+    drop-first: false # Drops and creates scheme from scratch on every start
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
 upload:

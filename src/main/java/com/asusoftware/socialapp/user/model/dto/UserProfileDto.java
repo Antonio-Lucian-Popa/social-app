@@ -21,6 +21,8 @@ public class UserProfileDto {
     private List<UserDto> following;
     private List<UserDto> followers;
 
+    //TODO: Adauga si numberOfPosts plus userProfileImage
+
     public static UserProfileDto toDto(User user) {
         UserProfileDto dto = new UserProfileDto();
         dto.setId(user.getId());

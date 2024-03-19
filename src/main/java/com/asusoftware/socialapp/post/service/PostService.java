@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -55,17 +56,19 @@ public class PostService {
         User user = userService.findById(userId);
         Post post = createPostDto.toEntity();
         post.setUser(user);
-        Post postSaved = postRepository.save(createPostDto.toEntity()); // This saves the post and gives it an ID
+        Post postSaved = postRepository.save(post); // This saves the post and gives it an ID
 
-        // Then, save the images and bind them to the post
-        List<String> filenames = files.stream()
-                .map(file -> saveImage(file, post.getId()))
-                .collect(Collectors.toList());
+       if(files != null) {
+           // Then, save the images and bind them to the post
+           List<String> filenames = files.stream()
+                   .map(file -> saveImage(file, postSaved.getId()))
+                   .collect(Collectors.toList());
 
-        // Update the Post entity with the image references
-        postSaved.setImageFilenames(filenames);
+           // Update the Post entity with the image references
+           postSaved.setImageFilenames(filenames);
+       }
         postRepository.save(postSaved); // Update the post record with image references
-
+        postSaved.setUserLikes(new HashSet<>());
         // Convert the updated Post entity to a DTO to return
         return PostDto.fromEntity(postSaved);
     }

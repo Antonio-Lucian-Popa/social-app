@@ -36,7 +36,7 @@ public class PostController {
     public ResponseEntity<PostDto> createPostWithImages(
             @PathVariable("userId") UUID userId,
             @RequestPart("createPostDto") CreatePostDto createPostDto,
-            @RequestPart("files") List<MultipartFile> files
+            @RequestPart(name = "files", required = false) List<MultipartFile> files
     ) {
         return ResponseEntity.ok(postService.createPostWithImages(userId, createPostDto, files));
     }
