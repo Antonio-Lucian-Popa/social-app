@@ -79,13 +79,13 @@ public class PostController {
 
 
     @PutMapping(path = "/like/{postId}/{userId}")
-    public void likePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
-        postService.likePost(postId, userId);
+    public ResponseEntity<PostDto> likePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
+        return ResponseEntity.ok(postService.likePost(postId, userId));
     }
 
     @PutMapping(path = "/unlike/{postId}/{userId}")
-    public void unlikePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
-        postService.unlikePost(postId, userId);
+    public ResponseEntity<PostDto> unlikePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
+        return ResponseEntity.ok(postService.unlikePost(postId, userId));
     }
 
     @DeleteMapping(path = "/delete/{id}/{userId}")

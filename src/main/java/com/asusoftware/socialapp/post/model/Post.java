@@ -41,10 +41,11 @@ public class Post {
     @ManyToMany
     @JoinTable(
             name = "user_post_likes",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "post_id")
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> userLikes = new HashSet<>();
+
 
     // Relationship with comments
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)

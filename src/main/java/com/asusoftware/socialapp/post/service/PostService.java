@@ -160,20 +160,25 @@ public class PostService {
         postRepository.delete(post);
     }
 
-    public void likePost(UUID postId, UUID userId) {
+    @Transactional
+    public PostDto likePost(UUID postId, UUID userId) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post not found with id: " + postId));
 
         User user = userService.findById(userId);
+        System.out.println(user);
 
         Set<User> likedPosts = post.getUserLikes();
-        likedPosts.add(user);
-
-        post.setUserLikes(likedPosts);
-        postRepository.save(post);
+        if (!likedPosts.contains(user)) {
+            likedPosts.add(user);
+            post.setUserLikes(likedPosts);
+            System.out.println(post.getUser());
+            postRepository.save(post);
+        }
+        return PostDto.fromEntity(post);
     }
 
-    public void unlikePost(UUID postId, UUID userId) {
+    public PostDto unlikePost(UUID postId, UUID userId) {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post not found with id: " + postId));
 
@@ -184,5 +189,6 @@ public class PostService {
 
         post.setUserLikes(likedPosts);
         postRepository.save(post);
+        return PostDto.fromEntity(post);
     }
 }
