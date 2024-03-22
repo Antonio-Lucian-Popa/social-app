@@ -49,13 +49,20 @@ public class PostController {
      * @return a list of posts based on page size
      */
     @GetMapping(path = "/findAllPosts/{userId}")
-    public ResponseEntity<Page<PostDto>> findFollowingPostsByUserId(
+    public ResponseEntity<Page<PostDto>> findPostsByUserId(
             @PathVariable("userId") UUID userId,
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "includeFollowing", defaultValue = "false") boolean includeFollowing) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostDto> postDtos = postService.findAllFollowingUsersPosts(userId, pageable);
+        Page<PostDto> postDtos;
+
+        if (includeFollowing) {
+            postDtos = postService.findAllFollowingUsersPosts(userId, pageable);
+        } else {
+            postDtos = postService.findPostsByUserId(userId, pageable);
+        }
         return ResponseEntity.ok(postDtos);
     }
 

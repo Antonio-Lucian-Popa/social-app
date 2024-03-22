@@ -8,6 +8,7 @@ import com.asusoftware.socialapp.post.model.dto.PostDto;
 import com.asusoftware.socialapp.post.repository.PostRepository;
 import com.asusoftware.socialapp.user.exception.UserNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.model.dto.UserPostDto;
 import com.asusoftware.socialapp.user.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+// TODO: return also the user image profile of the post
 
 @Service
 @Data
@@ -94,14 +97,39 @@ public class PostService {
         }
     }
 
+    public long countPostsByUserId(UUID userId) {
+        return postRepository.countPostsByUserId(userId);
+    }
+
 
     public Page<PostDto> findAllFollowingUsersPosts(UUID userId, Pageable pageable) {
         Page<Post> postPage = postRepository.findFollowingUsersPosts(userId, pageable);
+
         return postPage.map(post -> {
-            PostDto postDto = PostDto.fromEntityList(post);
+            UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
+
+            String imageUrl = constructImageUrlForUser(post.getUser().getId());
+            userPostDto.setProfileImage(imageUrl); // Here, setProfileImage expects a URL
+
+            PostDto postDto = PostDto.fromEntity(post);
+            postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
             return postDto;
         });
+    }
+
+    /**
+     * Is used to load images in Front-end app from Back-end link to the folder of images
+     * @param userId the user id which we want to see the image
+     * @return return the url concatenation to view the image on the Front-end client
+     */
+    public String constructImageUrlForUser(UUID userId) {
+        String baseUrl = "http://localhost:8081/images/";
+
+        User user = userService.findById(userId);
+        String imageName = user.getProfileImage();
+        // Assuming the image name is based on the user's ID
+        return baseUrl + userId + '/' + imageName; // Adjust the file extension based on your actual image format
     }
 
 
@@ -109,7 +137,13 @@ public class PostService {
         Page<Post> postPage = postRepository.findByUserId(userId, pageable);
 
         return postPage.map(post -> {
+            UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
+
+            String imageUrl = constructImageUrlForUser(post.getUser().getId());
+            userPostDto.setProfileImage(imageUrl); // Here, setProfileImage expects a URL
+
             PostDto postDto = PostDto.fromEntity(post);
+            postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
             return postDto;
         });

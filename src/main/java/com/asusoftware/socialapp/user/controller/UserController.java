@@ -1,7 +1,9 @@
 package com.asusoftware.socialapp.user.controller;
 
+import com.asusoftware.socialapp.auth.RegisterRequest;
 import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.model.dto.UpdateUserProfileDto;
 import com.asusoftware.socialapp.user.model.dto.UserProfileDto;
 import com.asusoftware.socialapp.user.service.UserService;
 
@@ -40,9 +42,16 @@ public class UserController {
         userService.unfollowUser(followerId, followingId);
     }
 
+    @PutMapping(path = "/{userId}/update")
+    public ResponseEntity<UpdateUserProfileDto> updateUserProfile(@PathVariable(name = "userId") UUID userId,
+                                  @RequestPart("request") UpdateUserProfileDto updatedUserDto,
+                                  @RequestPart(value = "file", required = false) MultipartFile file) {
+        return ResponseEntity.ok(userService.updateUserProfile(userId, updatedUserDto, file));
+    }
+
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserProfileDto> findById(@PathVariable(name = "id") UUID id) {
-        return ResponseEntity.ok(UserProfileDto.toDto(userService.findById(id)));
+        return ResponseEntity.ok(userService.findByIdDto(id));
     }
 
     @PostMapping("/upload")
@@ -68,25 +77,8 @@ public class UserController {
 
     @GetMapping("/image/{userId}")
     public ResponseEntity<Resource> getProfileImage(@PathVariable UUID userId) {
-        User user = userService.findById(userId);
-        if (user == null || user.getProfileImage() == null) {
-            throw new ImageNotFoundException("Profile image not found for user with ID: " + userId);
-        }
-
-        String filename = user.getProfileImage();
-        Path filePath = Paths.get(uploadDir + userId).resolve(filename);
-
-        try {
-            Resource resource = new UrlResource(filePath.toUri());
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .contentType(MediaType.IMAGE_JPEG) // Adjust the content type as needed
-                        .body(resource);
-            } else {
-                throw new ImageNotFoundException("Profile image not found for user with ID: " + userId);
-            }
-        } catch (MalformedURLException e) {
-            throw new ImageNotFoundException("Profile image not found for user with ID: " + userId, e);
-        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG) // Adjust the content type as needed
+                .body(userService.getProfileImage(userId));
     }
 }

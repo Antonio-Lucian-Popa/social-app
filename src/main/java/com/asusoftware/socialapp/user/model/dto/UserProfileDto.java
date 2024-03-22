@@ -18,6 +18,7 @@ public class UserProfileDto {
     private String email;
     private Date birthday;
     private Gender gender;
+    private long totalPosts;
     private List<UserDto> following;
     private List<UserDto> followers;
 
