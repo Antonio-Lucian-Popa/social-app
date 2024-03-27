@@ -21,6 +21,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Query("SELECT p FROM Post p WHERE p.user IN (SELECT u.following FROM User u WHERE u.id = :userId)")
     Page<Post> findFollowingUsersPosts(UUID userId, Pageable pageable);
 
+    @Query("SELECT p FROM Post p WHERE p.user.id = :userId")
     Page<Post> findByUserId(UUID userId, Pageable pageable);
 
     @Query("SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId")

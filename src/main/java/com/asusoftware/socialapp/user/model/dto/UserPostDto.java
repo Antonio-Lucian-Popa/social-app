@@ -21,6 +21,7 @@ public class UserPostDto {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 
@@ -29,7 +30,7 @@ public class UserPostDto {
                 .id(user.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                //.imageUrl(user.getImageUrl())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 }
