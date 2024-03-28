@@ -1,5 +1,8 @@
 package com.asusoftware.socialapp.post.service;
 
+import com.asusoftware.socialapp.notification.model.Notification;
+import com.asusoftware.socialapp.notification.model.NotificationType;
+import com.asusoftware.socialapp.notification.service.NotificationService;
 import com.asusoftware.socialapp.post.exception.PostNotFoundException;
 import com.asusoftware.socialapp.post.exception.StorageException;
 import com.asusoftware.socialapp.post.model.Post;
@@ -31,8 +34,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-// TODO: return also the user image profile of the post
-
 @Service
 @Data
 public class PostService {
@@ -42,17 +43,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
-
-    /*
-    public void createPost(CreatePostDto createPostDto, UUID userId) {
-        // retrieve user from database
-        User user = userService.findById(userId);
-        // create post
-        Post post = createPostDto.toEntity();
-        post.setUser(user);
-        // save post
-        postRepository.save(post);
-    } */
+    private NotificationService notificationService;
 
     @Transactional
     public PostDto createPostWithImages(UUID userId, CreatePostDto createPostDto, List<MultipartFile> files) {
@@ -165,15 +156,21 @@ public class PostService {
         Post post = postRepository.findById(postId).orElseThrow(() ->
                 new PostNotFoundException("Post not found with id: " + postId));
 
-        User user = userService.findById(userId);
-        System.out.println(user);
+        User likingUser = userService.findById(userId);
+        System.out.println(likingUser);
 
         Set<User> likedPosts = post.getUserLikes();
-        if (!likedPosts.contains(user)) {
-            likedPosts.add(user);
+        if (!likedPosts.contains(likingUser)) {
+            likedPosts.add(likingUser);
             post.setUserLikes(likedPosts);
             System.out.println(post.getUser());
             postRepository.save(post);
+
+            // Create a notification message
+            String message = String.format("%s liked your post", likingUser.getUsername());
+
+            // Create and save the notification for the post owner
+            notificationService.createNotification(likingUser.getId(), post.getUser().getId(), postId, NotificationType.LIKE);
         }
         return PostDto.fromEntity(post);
     }
