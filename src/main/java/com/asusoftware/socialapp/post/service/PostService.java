@@ -43,7 +43,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserService userService;
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Transactional
     public PostDto createPostWithImages(UUID userId, CreatePostDto createPostDto, List<MultipartFile> files) {

@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class UserProfileDto {
 
     private UUID id;
+    private String profileImageUrl;
     private String firstName;
     private String lastName;
     private String email;

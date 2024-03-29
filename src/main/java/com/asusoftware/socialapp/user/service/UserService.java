@@ -59,7 +59,9 @@ public class UserService {
 
         long totalUserPosts = 0;
 
+        String profileImageUrl = constructImageUrlForUser(user);
         UserProfileDto userProfileDto = UserProfileDto.toDto(user);
+        userProfileDto.setProfileImageUrl(profileImageUrl);
         totalUserPosts = postRepository.countPostsByUserId(id);
         userProfileDto.setTotalPosts(totalUserPosts);
 
@@ -209,7 +211,23 @@ public class UserService {
             );
         }
 
-        return UpdateUserProfileDto.toDto(findedUserRepo);
+        String profileImageUrl = constructImageUrlForUser(findedUserRepo);
+        UpdateUserProfileDto userProfileDto = UpdateUserProfileDto.toDto(findedUserRepo);
+        userProfileDto.setProfileImageUrl(profileImageUrl);
+        return userProfileDto;
+    }
+
+    /**
+     * Is used to load images in Front-end app from Back-end link to the folder of images
+     * @param user the user which we want to see the image
+     * @return return the url concatenation to view the image on the Front-end client
+     */
+    public String constructImageUrlForUser(User user) {
+        String baseUrl = "http://localhost:8081/images/";
+
+        String imageName = user.getProfileImage();
+        // Assuming the image name is based on the user's ID
+        return baseUrl + user.getId() + '/' + imageName; // Adjust the file extension based on your actual image format
     }
 
 }

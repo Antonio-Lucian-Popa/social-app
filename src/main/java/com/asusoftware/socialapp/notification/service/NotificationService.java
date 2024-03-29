@@ -9,11 +9,14 @@ import com.asusoftware.socialapp.post.repository.PostRepository;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.repository.UserRepository;
 import lombok.Data;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -54,6 +57,30 @@ public class NotificationService {
         emitNotification(savedNotification, recipientUserId, initiator.getProfileImage());
 
         return savedNotification;
+    }
+
+    public Page<NotificationDTO> findAll(Pageable pageable) {
+        Page<Notification> notifications = notificationRepository.findAll(pageable);
+        return notifications.map(notification -> {
+            User user = userRepository.findById(notification.getInitiator().getId()).orElseThrow();
+            String imageUrl = constructImageUrlForUser(user.getId());
+            return NotificationDTO.toDto(notification, imageUrl);
+        });
+    }
+
+
+    /**
+     * Is used to load images in Front-end app from Back-end link to the folder of images
+     * @param userId the user id which we want to see the image
+     * @return return the url concatenation to view the image on the Front-end client
+     */
+    public String constructImageUrlForUser(UUID userId) {
+        String baseUrl = "http://localhost:8081/images/";
+
+        User user = userRepository.findById(userId).orElseThrow();
+        String imageName = user.getProfileImage();
+        // Assuming the image name is based on the user's ID
+        return baseUrl + userId + '/' + imageName; // Adjust the file extension based on your actual image format
     }
 
     private String constructNotificationMessage(User initiator, NotificationType type) {

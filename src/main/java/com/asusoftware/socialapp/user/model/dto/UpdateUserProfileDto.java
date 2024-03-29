@@ -11,7 +11,7 @@ import java.util.UUID;
 public class UpdateUserProfileDto {
 
     private UUID id;
-    private String userProfileImage;
+    private String profileImageUrl;
     private String firstName;
     private String lastName;
     private String email;
@@ -24,7 +24,7 @@ public class UpdateUserProfileDto {
         dto.setId(user.getId());
         dto.setFirstName(user.getFirstName());
         dto.setLastName(user.getLastName());
-        dto.setUserProfileImage(user.getProfileImage());
+       // dto.profileImageUrl(user.getProfileImage());
         dto.setEmail(user.getEmail());
         dto.setBirthday(user.getBirthday());
         dto.setGender(user.getGender());
