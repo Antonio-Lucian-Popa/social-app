@@ -163,14 +163,13 @@ public class PostService {
         if (!likedPosts.contains(likingUser)) {
             likedPosts.add(likingUser);
             post.setUserLikes(likedPosts);
-            System.out.println(post.getUser());
             postRepository.save(post);
 
-            // Create a notification message
-            String message = String.format("%s liked your post", likingUser.getUsername());
-
-            // Create and save the notification for the post owner
-            notificationService.createNotification(likingUser.getId(), post.getUser().getId(), postId, NotificationType.LIKE);
+            // if the current user likes his posts the notification doesn't need to trigger
+            if(likingUser.getId() != post.getUser().getId()) {
+                // Create and save the notification for the post owner
+                notificationService.createNotification(likingUser.getId(), post.getUser().getId(), postId, NotificationType.LIKE);
+            }
         }
         return PostDto.fromEntity(post);
     }
