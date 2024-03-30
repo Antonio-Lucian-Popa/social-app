@@ -4,6 +4,7 @@ import com.asusoftware.socialapp.auth.RegisterRequest;
 import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.model.dto.UpdateUserProfileDto;
+import com.asusoftware.socialapp.user.model.dto.UserDto;
 import com.asusoftware.socialapp.user.model.dto.UserProfileDto;
 import com.asusoftware.socialapp.user.service.UserService;
 
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -52,6 +54,12 @@ public class UserController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<UserProfileDto> findById(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.ok(userService.findByIdDto(id));
+    }
+
+    @GetMapping("/suggested-users")
+    public ResponseEntity<List<UserDto>> getRandomUsers() {
+        // TODO: get random users that there are not in the current user following
+        return ResponseEntity.ok(userService.findRandomUsers());
     }
 
     @PostMapping("/upload")

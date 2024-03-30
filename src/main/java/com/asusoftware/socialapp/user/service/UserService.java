@@ -31,9 +31,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Data
@@ -228,6 +230,15 @@ public class UserService {
         String imageName = user.getProfileImage();
         // Assuming the image name is based on the user's ID
         return baseUrl + user.getId() + '/' + imageName; // Adjust the file extension based on your actual image format
+    }
+
+    public List<UserDto> findRandomUsers() {
+        return userRepository.findRandomUsers().stream().map(user -> {
+            String profileImageUrl = constructImageUrlForUser(user);
+            UserDto userDto = UserDto.toDto(user);
+            userDto.setProfileImageUrl(profileImageUrl);
+            return userDto;
+        }).collect(Collectors.toList());
     }
 
 }
