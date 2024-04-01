@@ -7,7 +7,7 @@ CREATE TABLE users (
     last_name VARCHAR(30) NOT NULL,
     email VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
-    birthday DATE NOT NULL,
+    birthday TIMESTAMP NOT NULL,
     gender VARCHAR(255),
     profile_image VARCHAR(255),
     role VARCHAR(20) NOT NULL,
@@ -75,5 +75,3 @@ CREATE TABLE user_followers (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (follower_id) REFERENCES users(id)
 );
-
-ALTER TABLE users ALTER COLUMN birthday TYPE TIMESTAMP;

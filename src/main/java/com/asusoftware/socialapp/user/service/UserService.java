@@ -203,6 +203,9 @@ public class UserService {
         findedUserRepo.setEmail(updatedUserDto.getEmail());
         findedUserRepo.setBirthday(updatedUserDto.getBirthday());
         findedUserRepo.setGender(updatedUserDto.getGender());
+        findedUserRepo.setBio(updatedUserDto.getBio());
+        findedUserRepo.setInterests(updatedUserDto.getInterests());
+        findedUserRepo.setLivesIn(updatedUserDto.getLivesIn());
 
         userRepository.save(findedUserRepo);
 
@@ -232,6 +235,7 @@ public class UserService {
         return baseUrl + user.getId() + '/' + imageName; // Adjust the file extension based on your actual image format
     }
 
+    // TODO: find random user that is not my user. So we need to retreive users but not our user
     public List<UserDto> findRandomUsers() {
         return userRepository.findRandomUsers().stream().map(user -> {
             String profileImageUrl = constructImageUrlForUser(user);

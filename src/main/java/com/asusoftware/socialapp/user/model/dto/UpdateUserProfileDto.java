@@ -5,6 +5,7 @@ import com.asusoftware.socialapp.user.model.User;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -18,6 +19,9 @@ public class UpdateUserProfileDto {
     private String password;
     private Date birthday;
     private Gender gender;
+    private String bio;
+    private List<String> interests;
+    private String livesIn;
 
     public static UpdateUserProfileDto toDto(User user) {
         UpdateUserProfileDto dto = new UpdateUserProfileDto();
@@ -28,6 +32,9 @@ public class UpdateUserProfileDto {
         dto.setEmail(user.getEmail());
         dto.setBirthday(user.getBirthday());
         dto.setGender(user.getGender());
+        dto.setBio(user.getBio());
+        dto.setInterests(user.getInterests());
+        dto.setLivesIn(user.getLivesIn());
         return dto;
     }
 

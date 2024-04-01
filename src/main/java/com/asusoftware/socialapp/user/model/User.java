@@ -47,6 +47,17 @@ public class User implements UserDetails {
     @Column(name = "profile_image")
     private String profileImage;
 
+    @Column(name = "lives_in")
+    private String livesIn;
+
+    @Column(name = "bio")
+    private String bio;
+
+    @ElementCollection
+    @CollectionTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "interest")
+    private List<String> interests;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false, length = 20)
     private Role role;
