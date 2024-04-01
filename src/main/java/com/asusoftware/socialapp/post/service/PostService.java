@@ -94,7 +94,7 @@ public class PostService {
 
 
     public Page<PostDto> findAllFollowingUsersPosts(UUID userId, Pageable pageable) {
-        Page<Post> postPage = postRepository.findFollowingUsersPosts(userId, pageable);
+        Page<Post> postPage = postRepository.findFollowingAndUsersPosts(userId, pageable);
 
         return postPage.map(post -> {
             UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
@@ -157,7 +157,6 @@ public class PostService {
                 new PostNotFoundException("Post not found with id: " + postId));
 
         User likingUser = userService.findById(userId);
-        System.out.println(likingUser);
 
         Set<User> likedPosts = post.getUserLikes();
         if (!likedPosts.contains(likingUser)) {
