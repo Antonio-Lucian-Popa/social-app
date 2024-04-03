@@ -1,6 +1,8 @@
 package com.asusoftware.socialapp.post.service;
 
 import com.asusoftware.socialapp.exceptions.UnauthorizedUserException;
+import com.asusoftware.socialapp.notification.model.NotificationType;
+import com.asusoftware.socialapp.notification.service.NotificationService;
 import com.asusoftware.socialapp.post.exception.CommentNotFoundException;
 import com.asusoftware.socialapp.post.model.Comment;
 import com.asusoftware.socialapp.post.model.Post;
@@ -8,6 +10,7 @@ import com.asusoftware.socialapp.post.model.dto.CommentDto;
 import com.asusoftware.socialapp.post.model.dto.CreateCommentDto;
 import com.asusoftware.socialapp.post.repository.CommentRepository;
 import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.model.dto.UserDto;
 import com.asusoftware.socialapp.user.service.UserService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
@@ -25,6 +28,8 @@ public class CommentService {
    // private final PostRepository postRepository;
     private final PostService postService;
     private final UserService userService;
+
+    private final NotificationService notificationService;
 
     /*
     /**
@@ -66,7 +71,19 @@ public class CommentService {
            // commentRepository.save(parentComment);
         }
 
-        return CommentDto.fromEntity(commentRepository.save(comment));
+        Comment commentSaved = commentRepository.save(comment);
+        notificationService.createNotification(commentDTO.getUserId(), post.getUser().getId(), null, NotificationType.COMMENT);
+        CommentDto commentDto = CommentDto.fromEntity(commentSaved);
+        UserDto userDto = UserDto.toDto(comment.getUser());
+        userDto.setProfileImageUrl(constructImageUrlForUser(comment.getUser()));
+        return commentDto;
+    }
+
+    public String constructImageUrlForUser(User user) {
+        String baseUrl = "http://localhost:8081/images/";
+        String imageName = user.getProfileImage();
+        // Assuming the image name is based on the user's ID
+        return baseUrl + user.getId() + '/' + imageName; // Adjust the file extension based on your actual image format
     }
 
     /**
@@ -173,7 +190,20 @@ public class CommentService {
     public List<CommentDto> getCommentsByPostId(UUID postId) {
         List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
         return comments.stream()
-                .map(CommentDto::fromEntity)
+                .map(comment -> {
+                    CommentDto commentDto = new CommentDto();
+                    commentDto.setId(comment.getId());
+                    commentDto.setPostId(comment.getPost().getId());
+                    if(comment.getParentComment() != null && comment.getParentComment().getId() != null) {
+                        commentDto.setParentId(comment.getParentComment().getId());
+                    }
+                    commentDto.setValue(comment.getValue());
+                    commentDto.setSubComments(CommentDto.fromEntityList(comment.getSubComments()));
+                    UserDto userDto = UserDto.toDto(comment.getUser());
+                    userDto.setProfileImageUrl(constructImageUrlForUser(comment.getUser()));
+                    commentDto.setUserDto(userDto);
+                    return commentDto;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -2,6 +2,8 @@ package com.asusoftware.socialapp.user.service;
 
 import com.asusoftware.socialapp.auth.RegisterRequest;
 import com.asusoftware.socialapp.exceptions.FileStorageException;
+import com.asusoftware.socialapp.notification.model.NotificationType;
+import com.asusoftware.socialapp.notification.service.NotificationService;
 import com.asusoftware.socialapp.post.repository.PostRepository;
 import com.asusoftware.socialapp.post.service.PostService;
 import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
@@ -50,6 +52,8 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    private final NotificationService notificationService;
+
     public User findById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -83,6 +87,9 @@ public class UserService {
 
         userRepository.save(follower);
         userRepository.save(following);
+
+        notificationService.createNotification(follower.getId(), following.getId(), null, NotificationType.FOLLOW);
+
     }
 
     public void unfollowUser(UUID followerId, UUID followingId) {
