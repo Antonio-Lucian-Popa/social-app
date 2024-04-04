@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -81,6 +82,14 @@ public class CommentService {
         return commentDto;
     }
 
+    @Transactional(readOnly = true)
+    public List<CommentDto> getCommentsByPostId(UUID postId) {
+        List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
+        return comments.stream()
+                .map(this::convertToCommentDtoRecursively)
+                .collect(Collectors.toList());
+    }
+
 
     public String constructImageUrlForUser(User user) {
         String baseUrl = "http://localhost:8081/images/";
@@ -129,17 +138,6 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    /*
-    public void deleteComment(UUID commentId, UUID userId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new CommentNotFoundException("Comment not found with id: " + commentId));
-        if(!comment.getUser().getId().equals(userId)) {
-            throw new CommentNotFoundException("Comment not found with id: " + commentId);
-        } else {
-            commentRepository.delete(comment);
-        }
-    } */
-
     /**
      * Update a comment by id
      * @param commentId
@@ -165,37 +163,7 @@ public class CommentService {
         return CommentDto.fromEntity(updated);
     }
 
-   /* public CommentDto updateComment(UUID commentId, UUID userId, CreateCommentDto updatedComment) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(() ->
-                new CommentNotFoundException("Comment not found with id: " + commentId));
-        if(!comment.getUser().getId().equals(userId)) {
-            throw new CommentNotFoundException("Comment not found with id: " + commentId);
-        } else {
-            comment.setValue(updatedComment.getValue());
-        }
 
-        comment.setValue(updatedComment.getValue());
-        return CommentDto.fromEntity(commentRepository.save(comment));
-    } */
-
-    /**
-     * Get all comments by post id
-     * @param postId
-     * @return List<CommentDto>
-     */
-   /* public List<CommentDto> getCommentsByPostId(UUID postId) {
-        List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
-        System.out.println(comments);
-        return CommentDto.fromEntityList(comments);
-    } */
-
-    @Transactional(readOnly = true)
-    public List<CommentDto> getCommentsByPostId(UUID postId) {
-        List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
-        return comments.stream()
-                .map(this::convertToCommentDtoRecursively)
-                .collect(Collectors.toList());
-    }
 
     private CommentDto convertToCommentDtoRecursively(Comment comment) {
         CommentDto commentDto = new CommentDto();
@@ -205,6 +173,7 @@ public class CommentService {
             commentDto.setParentId(comment.getParentComment().getId());
         }
         commentDto.setValue(comment.getValue());
+        commentDto.setCreatedAt(comment.getCreatedAt());
         // Convert sub-comments recursively
         if (comment.getSubComments() != null) {
             commentDto.setSubComments(comment.getSubComments().stream()

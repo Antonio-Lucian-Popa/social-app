@@ -32,31 +32,35 @@ public class NotificationService {
 
 
     public Notification createNotification(UUID initiatorUserId, UUID recipientUserId, UUID postId, NotificationType type) {
-        User initiator = userRepository.findById(initiatorUserId).orElseThrow(() -> new RuntimeException("User not found"));
-        User recipient = userRepository.findById(recipientUserId).orElseThrow(() -> new RuntimeException("User not found"));
+        if(initiatorUserId != recipientUserId) {
+            User initiator = userRepository.findById(initiatorUserId).orElseThrow(() -> new RuntimeException("User not found"));
+            User recipient = userRepository.findById(recipientUserId).orElseThrow(() -> new RuntimeException("User not found"));
 
-        Post post = null;
-        if (postId != null && !type.equals(NotificationType.FOLLOW)) {
-            post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+            Post post = null;
+            if (postId != null && !type.equals(NotificationType.FOLLOW)) {
+                post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+            }
+
+            String message = constructNotificationMessage(initiator, type);
+
+            Notification notification = new Notification();
+            notification.setMessage(message);
+            notification.setType(type);
+            notification.setRecipient(recipient); // Recipient of the notification
+            notification.setInitiator(initiator); // Set the initiator of the notification
+            if (post != null) notification.setPost(post); // For LIKE and COMMENT, not for FOLLOW
+            notification.setRead(false);
+            notification.setCreatedAt(LocalDateTime.now());
+
+            Notification savedNotification = notificationRepository.save(notification);
+
+            // Emit the notification
+            emitNotification(savedNotification, recipientUserId, initiator.getProfileImage());
+
+            return savedNotification;
+        } else {
+            return null;
         }
-
-        String message = constructNotificationMessage(initiator, type);
-
-        Notification notification = new Notification();
-        notification.setMessage(message);
-        notification.setType(type);
-        notification.setRecipient(recipient); // Recipient of the notification
-        notification.setInitiator(initiator); // Set the initiator of the notification
-        if (post != null) notification.setPost(post); // For LIKE and COMMENT, not for FOLLOW
-        notification.setRead(false);
-        notification.setCreatedAt(LocalDateTime.now());
-
-        Notification savedNotification = notificationRepository.save(notification);
-
-        // Emit the notification
-        emitNotification(savedNotification, recipientUserId, initiator.getProfileImage());
-
-        return savedNotification;
     }
 
     public Page<NotificationDTO> findAll(Pageable pageable) {
