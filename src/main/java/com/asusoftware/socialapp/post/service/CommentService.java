@@ -51,33 +51,36 @@ public class CommentService {
     public CommentDto createComment(CreateCommentDto commentDTO) {
         Comment comment = new Comment();
         comment.setValue(commentDTO.getValue());
-        // Setting the creation time
         comment.setCreatedAt(LocalDateTime.now());
 
-        // Set the post and user - assuming you have methods to fetch them
-        // For example, using a PostService and UserService
+        // Fetch post and user
         Post post = postService.findById(commentDTO.getPostId());
         User user = userService.findById(commentDTO.getUserId());
         comment.setPost(post);
         comment.setUser(user);
 
-        // Set the parent comment for subComments, if applicable
+        // Set the parent comment if present
         if (commentDTO.getParentId() != null) {
             Comment parentComment = commentRepository.findById(commentDTO.getParentId())
                     .orElseThrow(() -> new RuntimeException("Parent comment not found"));
             comment.setParentComment(parentComment);
-            // TODO: remember to do the delete on the delete req of subcomment
-           // parentComment.getSubComments().add(comment);
-           // commentRepository.save(parentComment);
+            // No need to manually update 'subComments' list of parentComment due to cascade settings
         }
 
+        // Save the comment
         Comment commentSaved = commentRepository.save(comment);
+
+        // Handle notification
         notificationService.createNotification(commentDTO.getUserId(), post.getUser().getId(), null, NotificationType.COMMENT);
+
+        // Prepare and return DTO
         CommentDto commentDto = CommentDto.fromEntity(commentSaved);
         UserDto userDto = UserDto.toDto(comment.getUser());
         userDto.setProfileImageUrl(constructImageUrlForUser(comment.getUser()));
+        commentDto.setUserDto(userDto);
         return commentDto;
     }
+
 
     public String constructImageUrlForUser(User user) {
         String baseUrl = "http://localhost:8081/images/";
@@ -190,21 +193,29 @@ public class CommentService {
     public List<CommentDto> getCommentsByPostId(UUID postId) {
         List<Comment> comments = commentRepository.findCommentsWithSubcommentsByPostId(postId);
         return comments.stream()
-                .map(comment -> {
-                    CommentDto commentDto = new CommentDto();
-                    commentDto.setId(comment.getId());
-                    commentDto.setPostId(comment.getPost().getId());
-                    if(comment.getParentComment() != null && comment.getParentComment().getId() != null) {
-                        commentDto.setParentId(comment.getParentComment().getId());
-                    }
-                    commentDto.setValue(comment.getValue());
-                    commentDto.setSubComments(CommentDto.fromEntityList(comment.getSubComments()));
-                    UserDto userDto = UserDto.toDto(comment.getUser());
-                    userDto.setProfileImageUrl(constructImageUrlForUser(comment.getUser()));
-                    commentDto.setUserDto(userDto);
-                    return commentDto;
-                })
+                .map(this::convertToCommentDtoRecursively)
                 .collect(Collectors.toList());
+    }
+
+    private CommentDto convertToCommentDtoRecursively(Comment comment) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comment.getId());
+        commentDto.setPostId(comment.getPost().getId());
+        if (comment.getParentComment() != null) {
+            commentDto.setParentId(comment.getParentComment().getId());
+        }
+        commentDto.setValue(comment.getValue());
+        // Convert sub-comments recursively
+        if (comment.getSubComments() != null) {
+            commentDto.setSubComments(comment.getSubComments().stream()
+                    .map(this::convertToCommentDtoRecursively)
+                    .collect(Collectors.toList()));
+        }
+        // Set user DTO, including profile image URL
+        UserDto userDto = UserDto.toDto(comment.getUser());
+        userDto.setProfileImageUrl(constructImageUrlForUser(comment.getUser()));
+        commentDto.setUserDto(userDto);
+        return commentDto;
     }
 
     // Other methods

@@ -44,4 +44,15 @@ public class Comment {
     // List of subcomments
     @OneToMany(mappedBy = "parentComment", cascade = CascadeType.ALL)
     private List<Comment> subComments;
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", value='" + value + '\'' +
+                ", createdAt=" + createdAt +
+                // Avoid including 'subComments', 'post', 'user', 'parentComment' to prevent recursion
+                '}';
+    }
+
 }
