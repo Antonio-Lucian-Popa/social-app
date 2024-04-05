@@ -12,10 +12,10 @@ public class CreatePostDto {
     private String description;
     //private String imageUrl;
 
-    public Post toEntity() {
+    public static Post toEntity(CreatePostDto createPostDto) {
         return Post.builder()
-                .description(description)
-                .createdAt(LocalDateTime.now(ZoneOffset.UTC))
+                .description(createPostDto.getDescription())
+                .createdAt(LocalDateTime.now())
                 //.imageUrl(imageUrl)
                 .build();
     }

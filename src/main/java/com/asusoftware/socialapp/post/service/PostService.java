@@ -45,7 +45,7 @@ public class PostService {
     @Transactional
     public PostDto createPostWithImages(UUID userId, CreatePostDto createPostDto, List<MultipartFile> files) {
         User user = userService.findById(userId);
-        Post post = createPostDto.toEntity();
+        Post post = CreatePostDto.toEntity(createPostDto);
         post.setUser(user);
         Post postSaved = postRepository.save(post); // This saves the post and gives it an ID
 
@@ -115,6 +115,7 @@ public class PostService {
             PostDto postDto = PostDto.fromEntity(post);
             postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
+            postDto.setCreatedAt(post.getCreatedAt());
 
             // Assuming each post can have multiple images, construct URLs for them
             List<String> imageUrls = constructImageUrlsForPost(post.getId());
@@ -175,6 +176,7 @@ public class PostService {
             PostDto postDto = PostDto.fromEntity(post);
             postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
+            postDto.setCreatedAt(post.getCreatedAt());
 
             // Assuming each post can have multiple images, construct URLs for them
             List<String> imageUrls = constructImageUrlsForPost(post.getId());
