@@ -28,10 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,25 +61,38 @@ public class PostService {
         postRepository.save(postSaved); // Update the post record with image references
         postSaved.setUserLikes(new HashSet<>());
         // Convert the updated Post entity to a DTO to return
-        return PostDto.fromEntity(postSaved);
+        PostDto postDto = PostDto.fromEntity(postSaved);
+        List<String> imageUrls = constructImageUrlsForPost(postSaved.getId());
+        postDto.setImageFilenames(imageUrls); // Set image URLs for the post
+        return postDto;
     }
+
+    // TODO: de vazut de ce nu merge linkul catre post images ca la user
 
     private String saveImage(MultipartFile file, UUID postId) {
         if (file.isEmpty()) {
-            // Handle empty file case
+            throw new StorageException("Cannot store empty file.");
         }
         try {
             String originalFilename = file.getOriginalFilename();
-            String filename = postId.toString() + "_" + originalFilename;
-            Path destinationFile = Paths.get(uploadDir).resolve(Paths.get(filename))
-                    .normalize().toAbsolutePath();
-            if (!destinationFile.getParent().equals(Paths.get(uploadDir).toAbsolutePath())) {
-                throw new StorageException("Cannot store file outside current directory.");
+            // Ensure the directory structure /posts/{postId}/ exists
+            Path directory = Paths.get(uploadDir, "posts", postId.toString()).toAbsolutePath().normalize();
+            Files.createDirectories(directory); // This will create all non-existent parent directories
+
+            // Construct the final file path
+            Path destinationFile = directory.resolve(originalFilename).normalize();
+
+            // Security check to ensure we're not saving the file outside of the intended directory
+            if (!destinationFile.getParent().equals(directory)) {
+                throw new StorageException("Cannot store file outside of the specified directory.");
             }
+
+            // Save the file
             try (InputStream inputStream = file.getInputStream()) {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
-            return filename;
+            // Return the relative path to the saved file
+            return Paths.get("posts", postId.toString(), originalFilename).toString();
         } catch (IOException e) {
             throw new StorageException("Failed to store file.", e);
         }
@@ -99,14 +109,42 @@ public class PostService {
         return postPage.map(post -> {
             UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
 
-            String imageUrl = constructImageUrlForUser(post.getUser().getId());
-            userPostDto.setProfileImage(imageUrl); // Here, setProfileImage expects a URL
+            String userProfileImageUrl = constructImageUrlForUser(post.getUser().getId());
+            userPostDto.setProfileImage(userProfileImageUrl); // Set user's profile image URL
 
             PostDto postDto = PostDto.fromEntity(post);
             postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
+
+            // Assuming each post can have multiple images, construct URLs for them
+            List<String> imageUrls = constructImageUrlsForPost(post.getId());
+            postDto.setImageFilenames(imageUrls); // Set image URLs for the post
+
             return postDto;
         });
+    }
+
+    private List<String> constructImageUrlsForPost(UUID postId) {
+        String baseUrl = "http://localhost:8081/images/posts/";
+        Path postImagesDir = Paths.get(uploadDir, "posts", postId.toString()).toAbsolutePath().normalize();
+
+        List<String> imageUrls = new ArrayList<>();
+        try {
+            if (Files.exists(postImagesDir)) {
+                Files.list(postImagesDir).forEach(filePath -> {
+                    if (Files.isRegularFile(filePath)) {
+                        // Construct a publicly accessible URL for each image
+                        String imageUrl = baseUrl + postId + '/' + filePath.getFileName().toString();
+                        imageUrls.add(imageUrl);
+                    }
+                });
+            }
+        } catch (IOException e) {
+            // Log error or handle it according to your application's policies
+            System.err.println("Error listing images for post: " + e.getMessage());
+        }
+
+        return imageUrls;
     }
 
     /**
@@ -130,12 +168,18 @@ public class PostService {
         return postPage.map(post -> {
             UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
 
-            String imageUrl = constructImageUrlForUser(post.getUser().getId());
-            userPostDto.setProfileImage(imageUrl); // Here, setProfileImage expects a URL
+            // Construct the URL for the user's profile image
+            String userProfileImageUrl = constructImageUrlForUser(post.getUser().getId());
+            userPostDto.setProfileImage(userProfileImageUrl);
 
             PostDto postDto = PostDto.fromEntity(post);
             postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
+
+            // Assuming each post can have multiple images, construct URLs for them
+            List<String> imageUrls = constructImageUrlsForPost(post.getId());
+            postDto.setImageFilenames(imageUrls); // Set image URLs for the post
+
             return postDto;
         });
     }
