@@ -18,7 +18,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -104,7 +106,9 @@ public class PostService {
 
 
     public Page<PostDto> findAllFollowingUsersPosts(UUID userId, Pageable pageable) {
-        Page<Post> postPage = postRepository.findFollowingAndUsersPosts(userId, pageable);
+        Pageable pageableWithSorting = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").descending());
+
+        Page<Post> postPage = postRepository.findFollowingAndUsersPosts(userId, pageableWithSorting);
 
         return postPage.map(post -> {
             UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
@@ -164,7 +168,9 @@ public class PostService {
 
 
     public Page<PostDto> findPostsByUserId(UUID userId, Pageable pageable) {
-        Page<Post> postPage = postRepository.findByUserId(userId, pageable);
+        Pageable pageableWithSorting = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").descending());
+
+        Page<Post> postPage = postRepository.findByUserId(userId, pageableWithSorting);
 
         return postPage.map(post -> {
             UserPostDto userPostDto = UserPostDto.fromEntity(post.getUser());
