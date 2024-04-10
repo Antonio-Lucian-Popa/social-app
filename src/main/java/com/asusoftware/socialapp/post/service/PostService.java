@@ -9,10 +9,12 @@ import com.asusoftware.socialapp.post.model.Post;
 import com.asusoftware.socialapp.post.model.dto.CreatePostDto;
 import com.asusoftware.socialapp.post.model.dto.PostDto;
 import com.asusoftware.socialapp.post.repository.PostRepository;
+import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
 import com.asusoftware.socialapp.user.exception.UserNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.model.dto.UserPostDto;
 import com.asusoftware.socialapp.user.service.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -69,7 +72,40 @@ public class PostService {
         return postDto;
     }
 
-    // TODO: de vazut de ce nu merge linkul catre post images ca la user
+    @Transactional
+    public PostDto updateExistingPost(UUID postId, UUID userId, CreatePostDto updatePostDto, List<MultipartFile> newImages) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new EntityNotFoundException("Post not found"));
+
+        if (!post.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("User does not have permission to update this post");
+        }
+
+        // Update post details here...
+        post.setDescription(updatePostDto.getDescription());
+
+        // Handle new images
+       if(newImages != null && !newImages.isEmpty()) {
+           List<String> addedImageFilenames = newImages.stream()
+                   .map(file -> saveImage(file, post.getId())).toList();
+
+           // Finalize the list of image filenames for the post
+           List<String> finalImageFilenames = new ArrayList<>(post.getImageFilenames());
+           finalImageFilenames.addAll(addedImageFilenames);
+           post.setImageFilenames(finalImageFilenames);
+       }
+
+        postRepository.save(post);
+
+        // Construct PostDto...
+        PostDto postDto = PostDto.fromEntity(post);
+        postDto.getUser().setProfileImage(constructImageUrlForUser(post.getUser().getId()));
+        // Assuming constructImageUrlsForPost is adapted to handle a list of filenames and construct URLs
+        List<String> imageUrls = constructImageUrlsForPost(post.getId());
+        postDto.setImageFilenames(imageUrls);
+
+        return postDto;
+    }
+
 
     private String saveImage(MultipartFile file, UUID postId) {
         if (file.isEmpty()) {
@@ -237,5 +273,35 @@ public class PostService {
         post.setUserLikes(likedPosts);
         postRepository.save(post);
         return PostDto.fromEntity(post);
+    }
+
+    @Transactional
+    public void removeImagesByUrls(UUID postId, List<String> imageUrls) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid post ID: " + postId));
+
+        imageUrls.forEach(url -> {
+            String filename = extractFilenameFromUrl(url);
+            Path fileToDeletePath = Paths.get(uploadDir, "posts", postId.toString(), filename);
+
+            try {
+                Files.deleteIfExists(fileToDeletePath);
+                // Remove the filename from the post's imageFilenames
+                post.getImageFilenames().remove(filename);
+                // Log success or handle accordingly
+            } catch (IOException e) {
+                // Log failure to delete or handle accordingly
+                e.printStackTrace();
+            }
+        });
+
+        // Save the post entity to persist the removal of image filenames
+        postRepository.save(post);
+    }
+
+    private String extractFilenameFromUrl(String url) {
+        // This implementation needs to be adjusted based on how your URLs are structured.
+        // Assuming the URL ends with "/posts/{postId}/{filename}", here's a simple extraction:
+        return url.substring(url.lastIndexOf('/') + 1);
     }
 }

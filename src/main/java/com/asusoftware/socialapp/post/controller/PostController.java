@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,6 +78,10 @@ public class PostController {
         return ResponseEntity.ok(postDtos);
     }
 
+    @PutMapping(path = "/update/{postId}/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<PostDto> updatePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId, @RequestPart("updatedPost") CreatePostDto updatePostDto, @RequestPart(name = "files", required = false) List<MultipartFile> images) {
+        return ResponseEntity.ok(postService.updateExistingPost(postId, userId, updatePostDto, images));
+    }
 
     @PutMapping(path = "/like/{postId}/{userId}")
     public ResponseEntity<PostDto> likePost(@PathVariable("postId") UUID postId, @PathVariable("userId") UUID userId) {
@@ -91,5 +96,15 @@ public class PostController {
     @DeleteMapping(path = "/delete/{id}/{userId}")
     public void deletePostById(@PathVariable("id") UUID id, @PathVariable("userId") UUID userId) {
         postService.deletePostById(id, userId);
+    }
+
+    @DeleteMapping("/removeImages/{postId}")
+    public ResponseEntity<?> removeImagesFromPost(@PathVariable UUID postId, @RequestBody List<String> imageUrls) {
+        try {
+            postService.removeImagesByUrls(postId, imageUrls);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error removing images: " + e.getMessage());
+        }
     }
 }
