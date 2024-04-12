@@ -243,10 +243,19 @@ public class UserService {
     }
 
     // TODO: find random user that is not my user. So we need to retreive users but not our user
-    public List<UserDto> findRandomUsers() {
-        return userRepository.findRandomUsers().stream().map(user -> {
+    public List<UserDto> findRandomUsers(UUID userId) {
+        return userRepository.findRandomUsers(userId).stream().map(user -> {
             String profileImageUrl = constructImageUrlForUser(user);
             UserDto userDto = UserDto.toDto(user);
+            userDto.setProfileImageUrl(profileImageUrl);
+            return userDto;
+        }).collect(Collectors.toList());
+    }
+
+    public List<UserDto> searchUsersByName(String name) {
+        return userRepository.findByUsernameStartingWith(name).stream().map(user -> {
+            UserDto userDto = UserDto.toDto(user);
+            String profileImageUrl = constructImageUrlForUser(user);
             userDto.setProfileImageUrl(profileImageUrl);
             return userDto;
         }).collect(Collectors.toList());

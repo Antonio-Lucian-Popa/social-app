@@ -56,10 +56,15 @@ public class UserController {
         return ResponseEntity.ok(userService.findByIdDto(id));
     }
 
-    @GetMapping("/suggested-users")
-    public ResponseEntity<List<UserDto>> getRandomUsers() {
+    @GetMapping("/suggested-users/{userId}")
+    public ResponseEntity<List<UserDto>> getRandomUsers(@PathVariable(name = "userId") UUID userId) {
         // TODO: get random users that there are not in the current user following
-        return ResponseEntity.ok(userService.findRandomUsers());
+        return ResponseEntity.ok(userService.findRandomUsers(userId));
+    }
+
+    @GetMapping("/search/users")
+    public ResponseEntity<List<UserDto>> searchUsers(@RequestParam String name) {
+        return ResponseEntity.ok(userService.searchUsersByName(name));
     }
 
     @PostMapping("/upload")

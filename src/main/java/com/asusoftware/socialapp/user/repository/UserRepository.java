@@ -16,8 +16,10 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByActivationCode(String activationCode);
 
-    @Query(value = "SELECT * FROM users ORDER BY RANDOM() LIMIT 5", nativeQuery = true)
-    List<User> findRandomUsers();
+    @Query(value = "SELECT * FROM users WHERE id <> ?1 ORDER BY RANDOM() LIMIT 5", nativeQuery = true)
+    List<User> findRandomUsers(UUID userId);
 
+    @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT(:name, '%')) OR LOWER(u.lastName) LIKE LOWER(CONCAT(:name, '%'))")
+    List<User> findByUsernameStartingWith(String name);
 
 }
