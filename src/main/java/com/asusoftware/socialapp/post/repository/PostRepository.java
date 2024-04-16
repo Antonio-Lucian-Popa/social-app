@@ -28,4 +28,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     @Query("SELECT COUNT(p) FROM Post p WHERE p.user.id = :userId")
     long countPostsByUserId(@Param("userId") UUID userId);
 
+    @Query("SELECT p FROM Post p WHERE p.imageFilenames IS NOT EMPTY")
+    Page<Post> findPostsWithImages(Pageable pageable);
+
 }

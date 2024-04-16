@@ -2,6 +2,7 @@ package com.asusoftware.socialapp.post.controller;
 
 import com.asusoftware.socialapp.post.model.dto.CreatePostDto;
 import com.asusoftware.socialapp.post.model.dto.PostDto;
+import com.asusoftware.socialapp.post.model.dto.PostImageDto;
 import com.asusoftware.socialapp.post.service.PostService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,6 @@ public class PostController {
     @Value("${upload.dir}")
     private String uploadDir;
     private final PostService postService;
-
-    /*
-    @PostMapping(path = "/create/{userId}")
-    public void createPost(@RequestBody CreatePostDto createPostDto, @PathVariable("userId") UUID userId) {
-        postService.createPost(createPostDto, userId);
-    } */
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<PostDto> createPostWithImages(
@@ -67,6 +62,11 @@ public class PostController {
         return ResponseEntity.ok(postDtos);
     }
 
+    @GetMapping("/find-post/{id}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") UUID id) {
+        return ResponseEntity.ok(postService.findPostById(id));
+    }
+
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Page<PostDto>> findPostsByUserId(
             @PathVariable("userId") UUID userId,
@@ -76,6 +76,12 @@ public class PostController {
         Pageable pageable = PageRequest.of(page, size);
         Page<PostDto> postDtos = postService.findPostsByUserId(userId, pageable);
         return ResponseEntity.ok(postDtos);
+    }
+
+    @GetMapping("/popular-images")
+    public ResponseEntity<Page<PostImageDto>> getFirstImageFromPosts(Pageable pageable) {
+        Page<PostImageDto> images = postService.getFirstImageFromEachPost(pageable);
+        return ResponseEntity.ok(images);
     }
 
     @PutMapping(path = "/update/{postId}/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

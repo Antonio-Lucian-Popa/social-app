@@ -8,10 +8,12 @@ import com.asusoftware.socialapp.post.exception.StorageException;
 import com.asusoftware.socialapp.post.model.Post;
 import com.asusoftware.socialapp.post.model.dto.CreatePostDto;
 import com.asusoftware.socialapp.post.model.dto.PostDto;
+import com.asusoftware.socialapp.post.model.dto.PostImageDto;
 import com.asusoftware.socialapp.post.repository.PostRepository;
 import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
 import com.asusoftware.socialapp.user.exception.UserNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.model.dto.UserDto;
 import com.asusoftware.socialapp.user.model.dto.UserPostDto;
 import com.asusoftware.socialapp.user.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,13 +21,12 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -299,6 +300,40 @@ public class PostService {
         postRepository.save(post);
     }
 
+    public Page<PostImageDto> getFirstImageFromEachPost(Pageable pageable) {
+        // Fetch the page of posts that supposedly have images
+        Page<Post> page = postRepository.findPostsWithImages(pageable);
+
+        // Filter and map to DTOs, only including posts with valid, non-empty image URLs
+        List<PostImageDto> filteredPosts = page.getContent().stream()
+                .filter(post -> !post.getImageFilenames().isEmpty()) // Ensure there are image filenames
+                .map(post -> {
+                    List<String> imageUrls = constructImageUrlsForPost(post.getId());
+                    if (!imageUrls.isEmpty()) { // Check if image URLs are indeed non-empty
+                        PostImageDto postImageDto = PostImageDto.toDto(post);
+                        postImageDto.setImageUrl(imageUrls.get(0)); // Set the first available image URL
+                        return postImageDto;
+                    }
+                    return null; // Return null if no valid image URLs are found
+                })
+                .filter(Objects::nonNull) // Remove any nulls from the list of DTOs
+                .collect(Collectors.toList());
+
+        // Return as a PageImpl to preserve Page properties but with filtered posts only
+        return new PageImpl<>(filteredPosts, pageable, filteredPosts.size());
+    }
+
+    public PostDto findPostById(UUID id) {
+        Post post = postRepository.findById(id) .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found with ID: " + id));
+        PostDto postDto = PostDto.fromEntity(post);
+        UserPostDto userDto = postDto.getUser();
+        userDto.setProfileImage(constructImageUrlForUser(userDto.getId()));
+        postDto.setUser(userDto);
+        List<String> images = constructImageUrlsForPost(id);
+        postDto.setImageFilenames(images);
+        postDto.setNumberOfComments(post.getComments().size());
+        return postDto;
+    }
     private String extractFilenameFromUrl(String url) {
         // This implementation needs to be adjusted based on how your URLs are structured.
         // Assuming the URL ends with "/posts/{postId}/{filename}", here's a simple extraction:
