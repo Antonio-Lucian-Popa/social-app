@@ -6,9 +6,9 @@ spring:
       max-file-size: 10MB
       max-request-size: 15MB
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/socialize  # Adjust as necessary for your test database
+    username: postgres
+    password: password
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -17,13 +17,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: POSTGRESQL
+    database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
   liquibase:
-    url: ${spring.datasource.url}
-    user: ${spring.datasource.username}
-    password: ${spring.datasource.password}
     enabled: true
     drop-first: false # Drops and creates scheme from scratch on every start
     change-log: classpath:db/changelog/db.changelog-master.yaml
@@ -54,3 +51,4 @@ application:
       expiration: 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+

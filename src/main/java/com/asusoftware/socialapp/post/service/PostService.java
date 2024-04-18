@@ -44,6 +44,9 @@ public class PostService {
     @Value("${upload.dir}")
     private String uploadDir;
 
+    @Value("${external-link.url}")
+    private String externalImagesLink;
+
     private final PostRepository postRepository;
     private final UserService userService;
     private final NotificationService notificationService;
@@ -167,7 +170,7 @@ public class PostService {
     }
 
     private List<String> constructImageUrlsForPost(UUID postId) {
-        String baseUrl = "http://localhost:8081/images/posts/";
+        String baseUrl = externalImagesLink + "posts/";
         Path postImagesDir = Paths.get(uploadDir, "posts", postId.toString()).toAbsolutePath().normalize();
 
         List<String> imageUrls = new ArrayList<>();
@@ -195,7 +198,7 @@ public class PostService {
      * @return return the url concatenation to view the image on the Front-end client
      */
     public String constructImageUrlForUser(UUID userId) {
-        String baseUrl = "http://localhost:8081/images/";
+        String baseUrl = externalImagesLink;
 
         User user = userService.findById(userId);
         String imageName = user.getProfileImage();

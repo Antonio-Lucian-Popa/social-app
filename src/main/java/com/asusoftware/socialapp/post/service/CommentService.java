@@ -12,6 +12,8 @@ import com.asusoftware.socialapp.post.repository.CommentRepository;
 import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.model.dto.UserDto;
 import com.asusoftware.socialapp.user.service.UserService;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,30 +25,16 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@Data
 public class CommentService {
+
+    @Value("${external-link.url}")
+    private String externalImagesLink;
     private final CommentRepository commentRepository;
-   // private final PostRepository postRepository;
     private final PostService postService;
     private final UserService userService;
 
     private final NotificationService notificationService;
-
-    /*
-    /**
-     * Create a comment
-     * @param postId
-     * @param commentDto
-     * @return CommentDto
-     */ /*
-    public CommentDto createComment(UUID postId,UUID userId, CreateCommentDto commentDto) {
-        Post post = postService.findById(postId);
-        User user = userService.findById(userId);
-        Comment comment = commentDto.toEntity(commentDto);
-        comment.setUser(user);
-        comment.setPost(post);
-        return CommentDto.fromEntity(commentRepository.save(comment));
-    } */
 
     @Transactional
     public CommentDto createComment(CreateCommentDto commentDTO) {
@@ -92,7 +80,7 @@ public class CommentService {
 
 
     public String constructImageUrlForUser(User user) {
-        String baseUrl = "http://localhost:8081/images/";
+        String baseUrl = externalImagesLink;
         String imageName = user.getProfileImage();
         // Assuming the image name is based on the user's ID
         return baseUrl + user.getId() + '/' + imageName; // Adjust the file extension based on your actual image format
