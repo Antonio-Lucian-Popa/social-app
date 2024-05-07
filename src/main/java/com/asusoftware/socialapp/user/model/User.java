@@ -65,6 +65,9 @@ public class User implements UserDetails {
     @Column(name = "activation_code", length = 36)
     private String activationCode;
 
+    @Column(name = "is_user_new")
+    private boolean isUserNew = true;
+
     @Column(name = "enabled")
     private boolean enabled = false;
 

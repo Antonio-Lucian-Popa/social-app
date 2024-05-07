@@ -61,6 +61,7 @@ public class AuthenticationService {
                 .birthday(request.getBirthday())
                 .gender(request.getGender())
                 .role(Role.USER)
+                .isUserNew(true)
                 .build();
         var savedUser= userRepository.save(user);
 
@@ -72,14 +73,6 @@ public class AuthenticationService {
         } else {
             setDefaultProfileImage(savedUser.getId());
         }
-
-        // Generați un cod de activare unic și construiți URL-ul de confirmare
-//        String activationCode = generateActivationCode();
-        //String confirmationLink = "https://your-app.com/confirm?code=" + activationCode;
-//        String confirmationLink = "http://localhost:8080/confirm?code=" + activationCode;
-
-        // Trimiteți e-mailul de confirmare
-//        emailService.sendConfirmationEmail(user.getEmail(), confirmationLink);
 
 
         var jwtToken = jwtService.generateToken(savedUser, savedUser.getId());

@@ -46,6 +46,9 @@ public class UserService {
     @Value("${upload.dir}")
     private String uploadDir;
 
+    @Value("${external-link.url}")
+    private String externalImagesLink;
+
     private final PostRepository postRepository;
 
     private final PasswordEncoder passwordEncoder;
@@ -213,6 +216,7 @@ public class UserService {
         findedUserRepo.setBio(updatedUserDto.getBio());
         findedUserRepo.setInterests(updatedUserDto.getInterests());
         findedUserRepo.setLivesIn(updatedUserDto.getLivesIn());
+        findedUserRepo.setUserNew(false);
 
         userRepository.save(findedUserRepo);
 
@@ -235,7 +239,7 @@ public class UserService {
      * @return return the url concatenation to view the image on the Front-end client
      */
     public String constructImageUrlForUser(User user) {
-        String baseUrl = "http://localhost:8081/images/";
+        String baseUrl = externalImagesLink;
 
         String imageName = user.getProfileImage();
         // Assuming the image name is based on the user's ID

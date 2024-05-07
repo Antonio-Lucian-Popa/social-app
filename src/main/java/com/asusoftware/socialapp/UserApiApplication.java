@@ -19,7 +19,7 @@ public class UserApiApplication {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:4200") // Or the origin you're serving your Angular app from
+                        .allowedOrigins("http://localhost:4200") // Include both if needed
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization")
@@ -27,5 +27,6 @@ public class UserApiApplication {
             }
         };
     }
+
 
 }

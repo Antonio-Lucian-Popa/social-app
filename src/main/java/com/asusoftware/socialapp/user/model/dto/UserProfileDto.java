@@ -25,6 +25,7 @@ public class UserProfileDto {
     private long totalPosts;
     private List<UserDto> following;
     private List<UserDto> followers;
+    private boolean isUserNew;
 
     //TODO: Adauga si numberOfPosts plus userProfileImage
 
@@ -41,6 +42,7 @@ public class UserProfileDto {
         dto.setInterests(user.getInterests());
         dto.setFollowing(user.getFollowing().stream().map(UserDto::toDto).collect(Collectors.toList()));
         dto.setFollowers(user.getFollowers().stream().map(UserDto::toDto).collect(Collectors.toList()));
+        dto.setUserNew(user.isUserNew());
         return dto;
     }
 }

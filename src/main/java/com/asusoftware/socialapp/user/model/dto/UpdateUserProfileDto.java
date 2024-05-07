@@ -22,6 +22,7 @@ public class UpdateUserProfileDto {
     private String bio;
     private List<String> interests;
     private String livesIn;
+    private boolean isUserNew;
 
     public static UpdateUserProfileDto toDto(User user) {
         UpdateUserProfileDto dto = new UpdateUserProfileDto();
@@ -35,6 +36,7 @@ public class UpdateUserProfileDto {
         dto.setBio(user.getBio());
         dto.setInterests(user.getInterests());
         dto.setLivesIn(user.getLivesIn());
+        dto.setUserNew(user.isUserNew());
         return dto;
     }
 
@@ -46,6 +48,7 @@ public class UpdateUserProfileDto {
         user.setEmail(userProfileDto.getEmail());
         user.setBirthday(userProfileDto.getBirthday());
         user.setGender(userProfileDto.getGender());
+        user.setUserNew(userProfileDto.isUserNew());
         return user;
     }
 }

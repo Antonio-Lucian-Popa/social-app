@@ -16,5 +16,9 @@ databaseChangeLog:
       relativeToChangelogFile: true
 
   - include:
+      file: DDL/004_create_tables.sql
+      relativeToChangelogFile: true
+
+  - include:
       file: DML/001_insert_data_socialize.sql
       relativeToChangelogFile: true

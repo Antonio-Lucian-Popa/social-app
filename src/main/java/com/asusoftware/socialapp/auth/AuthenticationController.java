@@ -1,5 +1,6 @@
 package com.asusoftware.socialapp.auth;
 
+import com.asusoftware.socialapp.config.JwtService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.io.IOException;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final JwtService jwtService;
 
     @PostMapping(value = "/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -35,6 +37,16 @@ public class AuthenticationController {
             HttpServletResponse response
     ) throws IOException {
         authenticationService.refreshToken(request, response);
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            String actualToken = token.substring(7);
+            boolean isValid = jwtService.isTokenExpired(actualToken);
+            return ResponseEntity.ok(isValid);
+        }
+        return ResponseEntity.badRequest().body("Invalid token format");
     }
 
  /*   @GetMapping("/confirm")

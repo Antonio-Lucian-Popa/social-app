@@ -6,7 +6,7 @@ spring:
       max-file-size: 10MB
       max-request-size: 15MB
   datasource:
-    url: jdbc:postgresql://localhost:5432/socialize  # Adjust as necessary for your test database
+    url: jdbc:postgresql://localhost:5432/postgres  # Adjust as necessary for your test database
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
