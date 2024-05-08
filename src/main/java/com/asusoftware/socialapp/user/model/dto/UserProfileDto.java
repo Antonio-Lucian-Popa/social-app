@@ -25,7 +25,7 @@ public class UserProfileDto {
     private long totalPosts;
     private List<UserDto> following;
     private List<UserDto> followers;
-    private boolean isUserNew;
+    private boolean userNew;
 
     //TODO: Adauga si numberOfPosts plus userProfileImage
 

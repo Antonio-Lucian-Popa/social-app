@@ -73,6 +73,7 @@ public class UserService {
         userProfileDto.setProfileImageUrl(profileImageUrl);
         totalUserPosts = postRepository.countPostsByUserId(id);
         userProfileDto.setTotalPosts(totalUserPosts);
+        userProfileDto.setUserNew(user.isUserNew());
 
 
         return userProfileDto;
