@@ -63,8 +63,8 @@ public class NotificationService {
         }
     }
 
-    public Page<NotificationDTO> findAll(Pageable pageable) {
-        Page<Notification> notifications = notificationRepository.findAll(pageable);
+    public Page<NotificationDTO> findAllByRecipientId(Pageable pageable, UUID recipientId) {
+        Page<Notification> notifications = notificationRepository.findByRecipientId(recipientId, pageable);
         return notifications.map(notification -> {
             User user = userRepository.findById(notification.getInitiator().getId()).orElseThrow();
             String imageUrl = constructImageUrlForUser(user.getId());

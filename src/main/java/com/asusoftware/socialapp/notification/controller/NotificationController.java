@@ -27,9 +27,9 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     } */
 
-    @GetMapping(path = "/findNotifications")
-    public ResponseEntity<Page<NotificationDTO>> getNotifications(Pageable pageable) {
-        Page<NotificationDTO> notifications = notificationService.findAll(pageable);
+    @GetMapping(path = "/findNotifications/{recipientId}")
+    public ResponseEntity<Page<NotificationDTO>> getNotifications(@PathVariable(name = "recipientId") UUID recipientId, Pageable pageable) {
+        Page<NotificationDTO> notifications = notificationService.findAllByRecipientId(pageable, recipientId);
         return ResponseEntity.ok(notifications);
     }
 }
