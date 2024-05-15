@@ -1,10 +1,10 @@
 -- liquibase formatted sql
 
 -- changeset yourname:insert-users
-INSERT INTO users (id, first_name, last_name, email, password, birthday, gender, profile_image, role, activation_code, enabled)
+INSERT INTO users (id, first_name, last_name, email, password, birthday, gender, profile_image, role, activation_code, is_user_new, enabled)
 VALUES
-  ('a0a2a1d4-1f2b-11ed-861d-0242ac120002', 'John', 'Doe', 'john.doe@example.com', 'hashedpassword', '1990-01-01', 'MALE', 'john_profile.jpg', 'USER', 'code1234', TRUE),
-  ('b1b2b1d4-1f2b-11ed-861d-0242ac120002', 'Jane', 'Smith', 'jane.smith@example.com', 'hashedpassword', '1992-02-02', 'FEMALE', 'jane_profile.jpg', 'USER', 'code5678', TRUE);
+  ('a0a2a1d4-1f2b-11ed-861d-0242ac120002', 'John', 'Doe', 'john.doe@example.com', 'hashedpassword', '1990-01-01', 'MALE', 'john_profile.jpg', 'USER', 'code1234', FALSE, TRUE),
+  ('b1b2b1d4-1f2b-11ed-861d-0242ac120002', 'Jane', 'Smith', 'jane.smith@example.com', 'hashedpassword', '1992-02-02', 'FEMALE', 'jane_profile.jpg', 'USER', 'code5678', FALSE, TRUE);
 
 -- changeset yourname:insert-tokens
 INSERT INTO token (id, token, token_type, revoked, expired, user_id)

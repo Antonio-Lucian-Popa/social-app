@@ -10,7 +10,9 @@ import com.asusoftware.socialapp.user.model.User;
 import com.asusoftware.socialapp.user.repository.UserRepository;
 import lombok.Data;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -64,6 +66,12 @@ public class NotificationService {
     }
 
     public Page<NotificationDTO> findAllByRecipientId(Pageable pageable, UUID recipientId) {
+        // Ensure that the pageable includes sorting parameters
+        // This step assumes that pageable must be constructed with sorting when calling this method
+        if (!pageable.getSort().isSorted()) {
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("createdAt").descending());
+        }
+
         Page<Notification> notifications = notificationRepository.findByRecipientId(recipientId, pageable);
         return notifications.map(notification -> {
             User user = userRepository.findById(notification.getInitiator().getId()).orElseThrow();
@@ -71,6 +79,7 @@ public class NotificationService {
             return NotificationDTO.toDto(notification, imageUrl);
         });
     }
+
 
 
     /**

@@ -2,6 +2,7 @@ package com.asusoftware.socialapp.user.model;
 
 import com.asusoftware.socialapp.post.model.Comment;
 import com.asusoftware.socialapp.post.model.Post;
+import com.asusoftware.socialapp.story.model.Story;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -83,6 +84,9 @@ public class User implements UserDetails {
     // Relationship with following users
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "followers")
     private Set<User> following = new HashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<Story> stories = new HashSet<>();
 
 
     @Override
