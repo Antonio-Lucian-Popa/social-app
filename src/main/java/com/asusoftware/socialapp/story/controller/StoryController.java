@@ -21,6 +21,11 @@ public class StoryController {
         return storyService.saveStory(storyValue, userId);
     }
 
+    @GetMapping
+    public List<StoryDto> getStoriesForUser(@RequestParam UUID userId) {
+        return storyService.getStoriesForUserAndFollowed(userId);
+    }
+
     @GetMapping("/new")
     public List<StoryDto> getNewStories(@RequestParam UUID userId) {
         return storyService.getNewStories(userId);

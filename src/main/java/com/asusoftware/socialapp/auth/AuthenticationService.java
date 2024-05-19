@@ -40,8 +40,6 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
-    //private final EmailService emailService;
-
     private final UserService userService;
 
     @Value("${upload.dir}")

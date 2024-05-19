@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS user_interests (
     REFERENCES users (id) ON DELETE CASCADE
 );
 
--- Create an index on the foreign key column for better join performance
 CREATE INDEX idx_user_interests_user_id ON user_interests(user_id);
 
 ALTER TABLE users ADD COLUMN lives_in VARCHAR(100);

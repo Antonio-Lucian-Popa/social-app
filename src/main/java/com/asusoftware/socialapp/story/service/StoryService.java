@@ -37,6 +37,11 @@ public class StoryService {
     private final UserService userService;
     private final StoryRepository storyRepository;
 
+    public StoryService(UserService userService, StoryRepository storyRepository) {
+        this.userService = userService;
+        this.storyRepository = storyRepository;
+    }
+
     public StoryDto saveStory(MultipartFile file, UUID userId) {
         if (file.isEmpty()) {
             throw new StorageException("Cannot store empty file.");
@@ -59,7 +64,7 @@ public class StoryService {
                 Files.copy(inputStream, destinationFile, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            String mediaUrl = Paths.get("stories", storyId.toString(), userId.toString(), originalFilename).toString();
+            String mediaUrl = Paths.get("stories", storyId.toString(), userId.toString(), originalFilename).toString().replace("\\", "/");
             LocalDateTime expirationDate = LocalDateTime.now().plus(24, ChronoUnit.HOURS);
 
             Story story = new Story();
@@ -81,6 +86,7 @@ public class StoryService {
     }
 
     private String getImageFullUrl(String mediaUrl) {
+        System.out.println("MediaUrl: " + mediaUrl);
         return externalImagesLink + mediaUrl;
     }
 
@@ -88,7 +94,6 @@ public class StoryService {
         List<Story> stories = storyRepository.findAllByUserOrUserFollowing(userId);
         return stories.stream().map(story -> {
             boolean viewed = story.getViewedBy().stream().anyMatch(user -> user.getId().equals(userId));
-            String userName = story.getUser().getFirstName() + " " + story.getUser().getLastName();
             List<UserDto> viewedBy = story.getViewedBy().stream()
                     .map(user -> {
                         UserDto userDto = UserDto.toDto(user);
@@ -96,7 +101,7 @@ public class StoryService {
                         return userDto;
                     })
                     .collect(Collectors.toList());
-            UserDto userDto = UserDto.toDto(userService.findById(userId));
+            UserDto userDto = UserDto.toDto(story.getUser());
             StoryDto storyDto = StoryDto.toDto(story);
             storyDto.setValue(getImageFullUrl(story.getValue()));
             storyDto.setViewed(viewed);
