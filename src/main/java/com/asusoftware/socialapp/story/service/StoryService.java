@@ -102,6 +102,7 @@ public class StoryService {
                     })
                     .collect(Collectors.toList());
             UserDto userDto = UserDto.toDto(story.getUser());
+            userDto.setProfileImageUrl(userService.constructImageUrlForUser(story.getUser()));
             StoryDto storyDto = StoryDto.toDto(story);
             storyDto.setValue(getImageFullUrl(story.getValue()));
             storyDto.setViewed(viewed);
