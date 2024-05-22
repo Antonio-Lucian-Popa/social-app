@@ -70,6 +70,7 @@ public class StoryService {
             Story story = new Story();
             story.setValue(mediaUrl);
             story.setExpirationDate(expirationDate);
+            story.setCreatedAt(LocalDateTime.now());
             story.setUser(user);
 
             story = storyRepository.save(story);

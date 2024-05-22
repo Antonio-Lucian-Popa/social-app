@@ -22,6 +22,7 @@ public class StoryDto {
     private UUID id;
     private String value;
     private LocalDateTime expirationDate;
+    private LocalDateTime createdAt;
     private UserDto user;
     private boolean viewed;
     private List<UserDto> viewedBy;
@@ -39,6 +40,7 @@ public class StoryDto {
         StoryDto storyDto = new StoryDto();
         storyDto.setId(story.getId());
         storyDto.setExpirationDate(story.getExpirationDate());
+        storyDto.setCreatedAt(story.getCreatedAt());
         return storyDto;
     }
 }

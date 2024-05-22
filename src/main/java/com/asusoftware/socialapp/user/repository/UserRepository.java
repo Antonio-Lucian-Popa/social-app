@@ -3,6 +3,7 @@ package com.asusoftware.socialapp.user.repository;
 import com.asusoftware.socialapp.user.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,8 +17,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     Optional<User> findByActivationCode(String activationCode);
 
-    @Query(value = "SELECT * FROM users WHERE id <> ?1 ORDER BY RANDOM() LIMIT 5", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE id <> :userId AND id NOT IN (SELECT user_id FROM user_followers WHERE follower_id = :userId) ORDER BY RANDOM() LIMIT 5", nativeQuery = true)
     List<User> findRandomUsers(UUID userId);
+
 
     @Query("SELECT u FROM User u WHERE LOWER(u.firstName) LIKE LOWER(CONCAT(:name, '%')) OR LOWER(u.lastName) LIKE LOWER(CONCAT(:name, '%'))")
     List<User> findByUsernameStartingWith(String name);

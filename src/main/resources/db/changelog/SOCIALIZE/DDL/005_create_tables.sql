@@ -5,6 +5,7 @@ CREATE TABLE stories (
     id UUID PRIMARY KEY,
     value VARCHAR(255) NOT NULL,
     expiration_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     user_id UUID NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
