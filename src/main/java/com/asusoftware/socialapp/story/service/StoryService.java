@@ -87,7 +87,6 @@ public class StoryService {
     }
 
     private String getImageFullUrl(String mediaUrl) {
-        System.out.println("MediaUrl: " + mediaUrl);
         return externalImagesLink + mediaUrl;
     }
 

@@ -2,8 +2,11 @@ package com.asusoftware.socialapp.story.repository;
 
 import com.asusoftware.socialapp.story.model.Story;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,5 +19,5 @@ public interface StoryRepository extends JpaRepository<Story, UUID> {
     List<Story> findAllByUserOrUserFollowing(UUID userId);
 
     @Query("SELECT s FROM Story s WHERE s.expirationDate < :now")
-    List<Story> findAllByExpirationDateBefore(LocalDateTime now);
+    List<Story> findAllByExpirationDateBefore(@Param("now") LocalDateTime now);
 }
