@@ -25,13 +25,8 @@ public class Post {
     @Column(name = "description", nullable = false, length = 30)
     private String description;
 
-   // private String imageUrl;
-
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-
-   // @OneToMany(mappedBy="post")
-   // private List<User> likes;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
