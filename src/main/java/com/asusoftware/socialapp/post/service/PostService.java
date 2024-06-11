@@ -161,6 +161,12 @@ public class PostService {
             postDto.setNumberOfComments(post.getComments().size());
             postDto.setCreatedAt(post.getCreatedAt());
 
+            List<UserPostDto> userLikesPostDtoList = postDto.getLikes().stream().peek(user -> {
+                String userLikeProfileImageUrl = constructImageUrlForUser(user.getId());
+                user.setProfileImage(userLikeProfileImageUrl);
+            }).toList();
+            postDto.setLikes(userLikesPostDtoList);
+
             // Assuming each post can have multiple images, construct URLs for them
             List<String> imageUrls = constructImageUrlsForPost(post.getId());
             postDto.setImageFilenames(imageUrls); // Set image URLs for the post
@@ -223,6 +229,12 @@ public class PostService {
             postDto.setUser(userPostDto);
             postDto.setNumberOfComments(post.getComments().size());
             postDto.setCreatedAt(post.getCreatedAt());
+
+            List<UserPostDto> userLikesPostDtoList = postDto.getLikes().stream().peek(user -> {
+                String userLikeProfileImageUrl = constructImageUrlForUser(user.getId());
+                user.setProfileImage(userLikeProfileImageUrl);
+            }).toList();
+            postDto.setLikes(userLikesPostDtoList);
 
             // Assuming each post can have multiple images, construct URLs for them
             List<String> imageUrls = constructImageUrlsForPost(post.getId());
