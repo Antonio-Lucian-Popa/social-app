@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,6 +57,8 @@ public class UserService {
     private final UserRepository userRepository;
 
     private final NotificationService notificationService;
+
+    private static final Logger LOGGER = Logger.getLogger(UserService.class.getName());
 
     public User findById(UUID id) {
         return userRepository.findById(id)
@@ -266,4 +269,30 @@ public class UserService {
         }).collect(Collectors.toList());
     }
 
+    public List<UUID> checkIfFollowing(UUID followerId, List<UUID> followedIds) {
+        List<User> users = userRepository.findIfFollowing(followerId, followedIds);
+        return users.stream().map(User::getId).collect(Collectors.toList());
+    }
+
+    public List<UserDto> getFollowers(UUID userId) {
+        List<UserDto> followers = userRepository.findFollowersByUserId(userId).stream().map(user -> {
+            UserDto userDto = UserDto.toDto(user);
+            String profileImageUrl = constructImageUrlForUser(user);
+            userDto.setProfileImageUrl(profileImageUrl);
+            return userDto;
+        }).toList();
+        LOGGER.info("Followers users of user " + userId + ": " + followers);
+        return followers;
+    }
+
+    public List<UserDto> getFollowing(UUID userId) {
+        List<UserDto> following = userRepository.findFollowingByUserId(userId).stream().map(user -> {
+            UserDto userDto = UserDto.toDto(user);
+            String profileImageUrl = constructImageUrlForUser(user);
+            userDto.setProfileImageUrl(profileImageUrl);
+            return userDto;
+        }).toList();
+        LOGGER.info("Following users of user " + userId + ": " + following);
+        return following;
+    }
 }

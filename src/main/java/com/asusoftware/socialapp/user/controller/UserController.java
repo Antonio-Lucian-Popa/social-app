@@ -82,6 +82,11 @@ public class UserController {
         return ResponseEntity.ok(fileName);
     }
 
+    @PostMapping("/check")
+    public List<UUID> checkIfFollowing(@RequestParam UUID followerId, @RequestBody List<UUID> followedIds) {
+        return userService.checkIfFollowing(followerId, followedIds);
+    }
+
     @DeleteMapping("/{userId}/deleteProfileImage")
     public ResponseEntity<String> deleteProfileImage(@PathVariable UUID userId) {
         userService.deleteProfileImage(userId);
@@ -93,5 +98,15 @@ public class UserController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG) // Adjust the content type as needed
                 .body(userService.getProfileImage(userId));
+    }
+
+    @GetMapping("/{userId}/followers")
+    public List<UserDto> getFollowers(@PathVariable(name = "userId") UUID userId) {
+        return userService.getFollowers(userId);
+    }
+
+    @GetMapping("/{userId}/following")
+    public List<UserDto> getFollowing(@PathVariable(name = "userId") UUID userId) {
+        return userService.getFollowing(userId);
     }
 }
