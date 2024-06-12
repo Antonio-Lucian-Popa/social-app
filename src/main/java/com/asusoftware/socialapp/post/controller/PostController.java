@@ -67,6 +67,11 @@ public class PostController {
         return ResponseEntity.ok(postService.findPostById(id));
     }
 
+    @GetMapping("/user/{userId}/images")
+    public List<String> getUserPostImages(@PathVariable UUID userId) {
+        return postService.getImageUrlsByUser(userId);
+    }
+
     @GetMapping(path = "/{userId}")
     public ResponseEntity<Page<PostDto>> findPostsByUserId(
             @PathVariable("userId") UUID userId,

@@ -349,6 +349,15 @@ public class PostService {
         postDto.setNumberOfComments(post.getComments().size());
         return postDto;
     }
+
+    public List<String> getImageUrlsByUser(UUID userId) {
+        return postRepository.findByUserId(userId)
+                .stream()
+                .flatMap(post -> constructImageUrlsForPost(post.getId()).stream())
+                .sorted(Comparator.comparing(String::toString).reversed()) // Sort by image URL (or another criteria)
+                .limit(4) // Limit to the last 4 images
+                .collect(Collectors.toList());
+    }
     private String extractFilenameFromUrl(String url) {
         // This implementation needs to be adjusted based on how your URLs are structured.
         // Assuming the URL ends with "/posts/{postId}/{filename}", here's a simple extraction:
