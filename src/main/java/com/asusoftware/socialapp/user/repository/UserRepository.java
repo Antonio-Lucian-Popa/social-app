@@ -27,10 +27,20 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT u FROM User u JOIN u.followers f WHERE f.id = :followerId AND u.id IN :followedIds")
     List<User> findIfFollowing(@Param("followerId") UUID followerId, @Param("followedIds") List<UUID> followedIds);
 
+    /**
+     * Retrieve user followers that follow the userId
+     * @param userId of the user that have followers
+     * @return a list of followers for the current user id
+     */
     @Query("SELECT f FROM User u JOIN u.followers f WHERE u.id = :userId")
     List<User> findFollowersByUserId(@Param("userId") UUID userId);
 
 
+    /**
+     * Retrieve user following users
+     * @param userId of the user that follow users
+     * @return a list of users that user follow
+     */
     @Query("SELECT f FROM User u JOIN u.following f WHERE u.id = :userId")
     List<User> findFollowingByUserId(@Param("userId") UUID userId);
 
