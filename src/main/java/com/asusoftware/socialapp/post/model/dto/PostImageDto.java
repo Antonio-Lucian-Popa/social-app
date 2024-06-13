@@ -18,5 +18,13 @@ public class PostImageDto {
         return imageDto;
     }
 
+    public static PostImageDto toDto(Post post, String imageUrl) {
+        PostImageDto imageDto = new PostImageDto();
+        imageDto.setPostId(post.getId());
+        imageDto.setDescription(post.getDescription());
+        imageDto.setImageUrl(imageUrl);
+        return imageDto;
+    }
+
     // Getters and setters
 }

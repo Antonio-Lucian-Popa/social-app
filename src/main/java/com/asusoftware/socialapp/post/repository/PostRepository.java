@@ -1,6 +1,7 @@
 package com.asusoftware.socialapp.post.repository;
 
 import com.asusoftware.socialapp.post.model.Post;
+import com.asusoftware.socialapp.post.model.dto.PostImageDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,5 +31,8 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
 
     @Query("SELECT p FROM Post p WHERE p.imageFilenames IS NOT EMPTY")
     Page<Post> findPostsWithImages(Pageable pageable);
+
+    @Query("SELECT p FROM Post p WHERE p.user.id = :userId ORDER BY p.createdAt DESC")
+    List<Post> findPostsByUserId(@Param("userId") UUID userId);
 
 }

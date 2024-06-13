@@ -350,13 +350,46 @@ public class PostService {
         return postDto;
     }
 
-    public List<String> getImageUrlsByUser(UUID userId) {
-        return postRepository.findByUserId(userId)
+//    public List<String> getImageUrlsByUser(UUID userId) {
+//        return postRepository.findByUserId(userId)
+//                .stream()
+//                .flatMap(post -> constructImageUrlsForPost(post.getId()).stream())
+//                .sorted(Comparator.comparing(String::toString).reversed()) // Sort by image URL (or another criteria)
+//                .limit(4) // Limit to the last 4 images
+//                .collect(Collectors.toList());
+//    }
+
+    public List<PostImageDto> getImageUrlsByUser(UUID userId) {
+        return postRepository.findPostsByUserId(userId)
                 .stream()
-                .flatMap(post -> constructImageUrlsForPost(post.getId()).stream())
-                .sorted(Comparator.comparing(String::toString).reversed()) // Sort by image URL (or another criteria)
+                .flatMap(post -> constructImageUrlsForPost(post).stream())
+                .sorted(Comparator.comparing(PostImageDto::getImageUrl).reversed()) // Sort by image URL (or another criteria)
                 .limit(4) // Limit to the last 4 images
                 .collect(Collectors.toList());
+    }
+
+    private List<PostImageDto> constructImageUrlsForPost(Post post) {
+        String baseUrl = externalImagesLink + "posts/";
+        UUID postId = post.getId();
+        Path postImagesDir = Paths.get(uploadDir, "posts", postId.toString()).toAbsolutePath().normalize();
+
+        List<PostImageDto> imageUrls = new ArrayList<>();
+        try {
+            if (Files.exists(postImagesDir)) {
+                Files.list(postImagesDir).forEach(filePath -> {
+                    if (Files.isRegularFile(filePath)) {
+                        // Construct a publicly accessible URL for each image
+                        String imageUrl = baseUrl + postId + '/' + filePath.getFileName().toString();
+                        imageUrls.add(PostImageDto.toDto(post, imageUrl));
+                    }
+                });
+            }
+        } catch (IOException e) {
+            // Log error or handle it according to your application's policies
+            System.err.println("Error listing images for post: " + e.getMessage());
+        }
+
+        return imageUrls;
     }
     private String extractFilenameFromUrl(String url) {
         // This implementation needs to be adjusted based on how your URLs are structured.

@@ -68,7 +68,7 @@ public class PostController {
     }
 
     @GetMapping("/user/{userId}/images")
-    public List<String> getUserPostImages(@PathVariable UUID userId) {
+    public List<PostImageDto> getUserPostImages(@PathVariable UUID userId) {
         return postService.getImageUrlsByUser(userId);
     }
 
