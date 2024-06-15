@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -113,6 +114,14 @@ public class NotificationService {
         // Assuming you have a DTO to include both the Notification and profile image URL
         NotificationDTO dto = NotificationDTO.toDto(notification, profileImageUrl);
         messagingTemplate.convertAndSendToUser(recipientUserId.toString(), "/queue/notifications", dto);
+    }
+
+    @Transactional
+    public void markAsRead(UUID notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new IllegalArgumentException("Notification not found"));
+        notification.setRead(true);
+        notificationRepository.save(notification);
     }
 
 

@@ -32,4 +32,10 @@ public class NotificationController {
         Page<NotificationDTO> notifications = notificationService.findAllByRecipientId(pageable, recipientId);
         return ResponseEntity.ok(notifications);
     }
+
+    @PutMapping("/{notificationId}/read")
+    public ResponseEntity<Void> markAsRead(@PathVariable UUID notificationId) {
+        notificationService.markAsRead(notificationId);
+        return ResponseEntity.ok().build();
+    }
 }
