@@ -3,6 +3,7 @@ package com.asusoftware.socialapp.user.controller;
 import com.asusoftware.socialapp.auth.RegisterRequest;
 import com.asusoftware.socialapp.user.exception.ImageNotFoundException;
 import com.asusoftware.socialapp.user.model.User;
+import com.asusoftware.socialapp.user.model.dto.ChangePasswordRequest;
 import com.asusoftware.socialapp.user.model.dto.UpdateUserProfileDto;
 import com.asusoftware.socialapp.user.model.dto.UserDto;
 import com.asusoftware.socialapp.user.model.dto.UserProfileDto;
@@ -21,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -85,6 +88,14 @@ public class UserController {
     @PostMapping("/check")
     public List<UUID> checkIfFollowing(@RequestParam UUID followerId, @RequestBody List<UUID> followedIds) {
         return userService.checkIfFollowing(followerId, followedIds);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request.getUserId(), request.getOldPassword(), request.getNewPassword());
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Password has been changed");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{userId}/deleteProfileImage")
