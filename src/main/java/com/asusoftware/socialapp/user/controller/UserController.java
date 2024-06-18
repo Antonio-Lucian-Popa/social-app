@@ -61,7 +61,6 @@ public class UserController {
 
     @GetMapping("/suggested-users/{userId}")
     public ResponseEntity<List<UserDto>> getRandomUsers(@PathVariable(name = "userId") UUID userId) {
-        // TODO: get random users that there are not in the current user following
         return ResponseEntity.ok(userService.findRandomUsers(userId));
     }
 

@@ -41,9 +41,8 @@ public class SecurityConfiguration {
                     configuration.setAllowCredentials(true);
                     return configuration;
                 }))
-                .securityMatcher("/api/**")
-                .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/api/v1/auth/**").permitAll()
+                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/api/v1/auth/register", "/api/v1/auth/authenticate", "/ws/**", "/images/**").permitAll() // Exclude /ws/info
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
@@ -56,6 +55,7 @@ public class SecurityConfiguration {
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
                 );
+
         return http.build();
     }
 }

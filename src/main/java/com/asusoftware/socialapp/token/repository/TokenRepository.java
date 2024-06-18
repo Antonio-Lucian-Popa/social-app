@@ -31,4 +31,6 @@ public interface TokenRepository extends JpaRepository<Token, Integer> {
 
     @Transactional
     List<Token> findByExpiredTrue();
+
+    boolean existsByToken(String token);
 }
